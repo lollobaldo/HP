@@ -1,0 +1,1 @@
+newtype ChessPiece = "A" | "B"
