@@ -2,7 +2,7 @@
 
 module Main where
 
-import qualified $FILE_NAME_TO_IMPORT$ as File
+import qualified ###REPLACE WITH NAME OF MODULE### as File
 import PrettyPrintable ( Mappable(prettyPrintWithMap) )
 import List
 import Utils ( printMappedSvgToFile )
@@ -13,4 +13,4 @@ import qualified Data.Text as T
 main = do
     print "working?"
     print File.l2
-    printMappedSvgToFile "out1.html" (prettyPrintWithMap File.l2)
+    printMappedSvgToFile "out1.html" (prettyPrintWithMap File.###REPLACE WITH IDENTIFIER OF EXPRESSION###)

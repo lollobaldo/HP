@@ -11,10 +11,10 @@ import qualified Diagrams.Backend.SVG         as D
 import PrettyPrintable
 import Utils
 
-instance (PrettyPrintable a, Show a) => PrettyPrintable [a] where
+instance {-# OVERLAPPABLE #-} (PrettyPrintable a, Show a) => PrettyPrintable [a] where
   prettyPrint = fst . prettyPrintListWithMap 0
 
-instance (PrettyPrintable a, Show a) => Mappable [a] where
+instance {-# OVERLAPPABLE #-} (PrettyPrintable a, Show a) => Mappable [a] where
   prettyPrintWithMap = prettyPrintListWithMap 0
 
 prettyPrintListWithMap :: (PrettyPrintable a, Show a) => Int -> [a] ->  (D.Diagram D.SVG, Map)

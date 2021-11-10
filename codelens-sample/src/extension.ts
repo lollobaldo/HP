@@ -1,31 +1,73 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cp from 'child_process';
-import { privateEncrypt } from 'crypto';
+import * as cp from 'child_process';);
+
+const readFile = async (filePath: fs.PathLike): Promise<string> => {
+  try {
+    return fs.promises.readFile(filePath, 'utf8');
+  } catch (err) {
+    console.error('Error occured while reading file!', err);
+  }
+  return "";
+};
+
+const replaceInFile = async (templatePath: fs.PathLike, filePath: fs.PathLike, reps: [RegExp | string, string][]) => {
+  let data = await readFile(templatePath);
+  for (const [s1, s2] of reps) {
+    data = data.replace(s1, s2);
+  }  
+  console.log(data);
+  try {
+    return fs.promises.writeFile(filePath, data, 'utf8');
+  } catch (err) {
+    console.error('Error occured while writing back file!', err);
+  }
+};
 
 export function activate(context: vscode.ExtensionContext) {
-  vscode.commands.registerCommand('myExtension.sayHello', () => {
-    if (!vscode.window.activeTextEditor) {
-        return;
-    }
+  // vscode.commands.registerCommand('myExtension.sayHello', () => {
+  //   if (!vscode.window.activeTextEditor) {
+  //       return;
+  //   }
 
-    const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, 2, 10);
-    inset.onDidDispose(() => {
-        console.log('WEBVIEW disposed...');
-    });
-    fs.readFile(path.join(context.extensionPath,'out1.html'),(err,data) => {
-      if(err) { console.error(err); }
-      console.log(data.toString());
-      inset.webview.html = data.toString();
-    });
-    // inset.webview.html = `<head><meta></head><body><img src="https://imgs.xkcd.com/comics/plutonium.png"/><body>`;
-  });
+  //   const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, 2, 10);
+  //   inset.onDidDispose(() => {
+  //       console.log('WEBVIEW disposed...');
+  //   });
+  //   fs.readFile(path.join(context.extensionPath,'out1.html'),(err,data) => {
+  //     if(err) { console.error(err); }
+  //     console.log(data.toString());
+  //     inset.webview.html = data.toString();
+  //   });
+  //   // inset.webview.html = `<head><meta></head><body><img src="https://imgs.xkcd.com/comics/plutonium.png"/><body>`;
+  // });
   context.subscriptions.push(
-    vscode.commands.registerCommand('catCoding.start', () => {
+    vscode.commands.registerCommand('catCoding.start', async () => {
       if (!vscode.window.activeTextEditor) {
         return;
       }
+      const editor = vscode.window.activeTextEditor;
+      
+      const filename = vscode.window.activeTextEditor.document.fileName;
+      const { name, dir } = path.parse(filename);
+      console.log(filename, dir, name);
+
+      const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
+      const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
+      await replaceInFile(tempSettingPath, injeSettingPath, [["###REPLACE WITH DIRECTORY OF PROJECT###", dir]]);
+
+      const tempMainPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs.template');
+      const injeMainPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs');
+      
+      const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
+      const highlight = editor.document.getText(wordRange);
+      await replaceInFile(tempMainPath, injeMainPath, [
+        ["###REPLACE WITH NAME OF MODULE###", name],
+        ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
+      ]);
+      console.log(highlight);
+
       // Create and show panel
       const panel = vscode.window.createWebviewPanel(
         'catCoding',
@@ -37,36 +79,10 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
 
-      const filename = vscode.window.activeTextEditor.document.fileName;
-      const folder = path.dirname(filename);
-      console.log(folder);
+      cp.execSync('cabal run --ghc-options=-i/afs/inf.ed.ac.uk/user/s18/s1853050/UNI2/HP/demo', { cwd: path.join(context.extensionPath, 'interactive-map') });
 
-      const runnerPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs');
-      fs.readFile(runnerPath, 'utf8', function (err,data) {
-        if (err) {
-          return console.log(err);
-        }
-        const result = data.replace(/string to be replaced/g, 'replacement');
-        fs.writeFile(someFile, result, 'utf8', function (err) {
-           if (err) return console.log(err);
-        });
-      });
-      
-
-      const ghci = cp.spawn('cabal', ['repl', 'main']);
-      // Event Standard Out.
-      ghci.stdout.on('data', (data) => {
-        console.log(data.toString('utf8'));
-      });
-
-      ghci.stdin.write('main\n');
-      console.log(ghci.stdout);
-      // And set its HTML content
-      fs.readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'),(err,data) => {
-        if(err) { console.error(err); }
-        // console.log(data.toString());
-        panel.webview.html = data.toString();
-      });
+      const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
+      panel.webview.html = data.toString();
       // panel.webview.html = getWebviewContent();
       // Handle messages from the webview
       panel.webview.onDidReceiveMessage(

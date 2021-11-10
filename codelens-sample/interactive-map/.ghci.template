@@ -3,7 +3,7 @@
 -- :set -XOverloadedStrings
 
 -- SAMPLE: -- :set -iC:/Users/lollo/Desktop/UNI/HP/demo
-:set -i$FILE_NAME_TO_IMPORT$
+:set -i###REPLACE WITH DIRECTORY OF PROJECT###
 
 -- :set -package unicode-show
 -- change default printer to show unicode characters
