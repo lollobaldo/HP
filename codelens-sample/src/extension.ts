@@ -49,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
       const editor = vscode.window.activeTextEditor;
       
-      const filename = vscode.window.activeTextEditor.document.fileName;
+      const filename = editor.document.fileName;
       const { name, dir } = path.parse(filename);
       console.log(filename, dir, name);
 
@@ -68,6 +68,10 @@ export function activate(context: vscode.ExtensionContext) {
       ]);
       console.log(highlight);
 
+      cp.execSync('cabal run --ghc-options=-i/afs/inf.ed.ac.uk/user/s18/s1853050/UNI2/HP/demo', { cwd: path.join(context.extensionPath, 'interactive-map') });
+
+      const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
+
       // Create and show panel
       const panel = vscode.window.createWebviewPanel(
         'catCoding',
@@ -78,12 +82,8 @@ export function activate(context: vscode.ExtensionContext) {
           enableScripts: true
         }
       );
-
-      cp.execSync('cabal run --ghc-options=-i/afs/inf.ed.ac.uk/user/s18/s1853050/UNI2/HP/demo', { cwd: path.join(context.extensionPath, 'interactive-map') });
-
-      const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
       panel.webview.html = data.toString();
-      // panel.webview.html = getWebviewContent();
+      // panel.webview.html = data;
       // Handle messages from the webview
       panel.webview.onDidReceiveMessage(
         message => {
@@ -93,11 +93,46 @@ export function activate(context: vscode.ExtensionContext) {
         undefined,
         context.subscriptions
       );
+
+      // const line = editor.selection.active.line;
+      // // const inset = vscode.window.createWebviewTextEditorInset(editor, line, 10);
+      // const inset = vscode.window.createWebviewTextEditorInset(
+      //     vscode.window.activeTextEditor, line-1, 30,
+      //     { localResourceRoots: [ vscode.Uri.file(context.extensionPath) ], enableScripts: true, }
+      //     );
+      // inset.webview.onDidReceiveMessage(
+      //   message => {
+      //     vscode.window.showErrorMessage(message.id);
+      //     return;
+      //   },
+      //   undefined,
+      //   context.subscriptions
+      // );
+      // inset.onDidDispose(() => {
+      //   console.log('WEBVIEW disposed...:(');
+      // });
+      // inset.webview.html = getWebviewContent();
+
+      // await (ms => new Promise(resolve => setTimeout(resolve, ms)))(1000);
+
+      // inset.webview.html = getWebviewContent();
+      // console.log(inset);
+
+      // const rootUrl = vscode.Uri.file(context.extensionPath);
+      // const inset = vscode.window.createWebviewTextEditorInset(
+      //   vscode.window.activeTextEditor, 5, 30,
+      //   { localResourceRoots: [ rootUrl ], enableScripts: true, }
+      //   );
+      // inset.onDidDispose(() => {
+      //     console.log('WEBVIEW disposed...');
+      // });
+      // inset.webview.html = getWebviewContent();
+      // console.log("Hey");
     })
   );
 }
 
-function getWebviewContent() {
+// function getWebviewContent() {
   // return(fs.readFile('out1.html',(err,data) => {
   //   if(err) { console.error(err); }
   //     resultPanel.webview.html = data;
@@ -113,7 +148,7 @@ function getWebviewContent() {
 //     <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
 // </body>
 // </html>`;
-}
+// }
 
 // // The module 'vscode' contains the VS Code extensibility API
 // // Import the module and reference it with the alias vscode in your code below
@@ -137,17 +172,17 @@ function getWebviewContent() {
 //   });
 // }
 
-// function getWebviewContent() {
-//     return `<!DOCTYPE html>
-//   <html lang="en">
-//   <head>
-//       <meta charset="UTF-8">
-//       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//       <title>Cat Coding</title>
-//   </head>
-//   <body>
-//       <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
-//   </body>
-//   </html>`;
-//   }
+function getWebviewContent() {
+    return `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Cat Coding</title>
+  </head>
+  <body>
+      <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
+  </body>
+  </html>`;
+  }
   

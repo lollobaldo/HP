@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -29,6 +28,9 @@ instance {-# OVERLAPPING  #-} PrettyPrintable String where
       t' = show t
       l = debug $ fromIntegral $ length t'
 
-instance (Num a, Show a) => PrettyPrintable a where
-  prettyPrint = prettyPrint . show
+instance {-# OVERLAPPABLE  #-} (Num a, Show a) => PrettyPrintable a where
+  prettyPrint t = D.text t' <> D.rect (0.8 * l) 1.2
+    where
+      t' = show t
+      l = debug $ fromIntegral $ length t'
 

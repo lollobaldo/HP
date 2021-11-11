@@ -12,8 +12,9 @@ import qualified Data.Text as T
 l1, l2, l3 :: [Int]
 l1 = []
 l2 = [23, 5, 81, 22]
-
 l3 = [1,2,3]
 
-l4 :: [String]
-l4=["1", "2"]
+l4 = [1,2,3]
+
+l5 :: [String]
+l5=["1", "2"]
