@@ -66,25 +66,20 @@ function activate(context) {
         console.log(highlight);
         cp.execSync('cabal run --ghc-options=-i/afs/inf.ed.ac.uk/user/s18/s1853050/UNI2/HP/demo', { cwd: path.join(context.extensionPath, 'interactive-map') });
         const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
-        // Create and show panel
-        const panel = vscode.window.createWebviewPanel('catCoding', 'Cat Coding', vscode.ViewColumn.One, {
-            // Enable scripts in the webview
-            enableScripts: true
-        });
-        panel.webview.html = data.toString();
-        // panel.webview.html = data;
-        // Handle messages from the webview
-        panel.webview.onDidReceiveMessage(message => {
-            vscode.window.showErrorMessage(message.id);
-            return;
-        }, undefined, context.subscriptions);
-        // const line = editor.selection.active.line;
-        // // const inset = vscode.window.createWebviewTextEditorInset(editor, line, 10);
-        // const inset = vscode.window.createWebviewTextEditorInset(
-        //     vscode.window.activeTextEditor, line-1, 30,
-        //     { localResourceRoots: [ vscode.Uri.file(context.extensionPath) ], enableScripts: true, }
-        //     );
-        // inset.webview.onDidReceiveMessage(
+        // // Create and show panel
+        // const panel = vscode.window.createWebviewPanel(
+        //   'catCoding',
+        //   'Cat Coding',
+        //   vscode.ViewColumn.One,
+        //   {
+        //     // Enable scripts in the webview
+        //     enableScripts: true
+        //   }
+        // );
+        // panel.webview.html = data.toString();
+        // // panel.webview.html = data;
+        // // Handle messages from the webview
+        // panel.webview.onDidReceiveMessage(
         //   message => {
         //     vscode.window.showErrorMessage(message.id);
         //     return;
@@ -92,13 +87,17 @@ function activate(context) {
         //   undefined,
         //   context.subscriptions
         // );
-        // inset.onDidDispose(() => {
-        //   console.log('WEBVIEW disposed...:(');
-        // });
-        // inset.webview.html = getWebviewContent();
-        // await (ms => new Promise(resolve => setTimeout(resolve, ms)))(1000);
-        // inset.webview.html = getWebviewContent();
-        // console.log(inset);
+        const line = editor.selection.active.line;
+        // const inset = vscode.window.createWebviewTextEditorInset(editor, line, 10);
+        const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 10, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
+        inset.webview.onDidReceiveMessage(message => {
+            vscode.window.showErrorMessage(message.id);
+            return;
+        }, undefined, context.subscriptions);
+        inset.onDidDispose(() => {
+            console.log('WEBVIEW disposed...:(');
+        });
+        inset.webview.html = data;
         // const rootUrl = vscode.Uri.file(context.extensionPath);
         // const inset = vscode.window.createWebviewTextEditorInset(
         //   vscode.window.activeTextEditor, 5, 30,

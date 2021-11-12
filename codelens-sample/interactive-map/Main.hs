@@ -2,7 +2,7 @@
 
 module Main where
 
-import qualified Demo as File
+import qualified Other as File
 import PrettyPrintable ( Mappable(prettyPrintWithMap) )
 import List
 import Utils ( printMappedSvgToFile )
