@@ -34,3 +34,14 @@ instance {-# OVERLAPPABLE  #-} (Num a, Show a) => PrettyPrintable a where
       t' = show t
       l = debug $ fromIntegral $ length t'
 
+instance {-# OVERLAPPING  #-} Mappable String where
+  prettyPrintWithMap t = (D.text t' <> D.rect (0.8 * l) 1.2, [])
+    where
+      t' = show t
+      l = debug $ fromIntegral $ length t'
+
+instance {-# OVERLAPPABLE  #-} (Num a, Show a) => Mappable a where
+  prettyPrintWithMap t = (D.text t' <> D.rect (0.8 * l) 1.2, [])
+    where
+      t' = show t
+      l = debug $ fromIntegral $ length t'

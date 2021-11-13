@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    /* Set a style for all buttons */
+    button {
+      background-color: #04AA6D;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      opacity: 0.9;
+    }
+
+    button:hover {
+      opacity: 1;
+    }
+
+    /* Float cancel and delete buttons and add an equal width */
+    .cancelbtn,
+    .deletebtn {
+      float: left;
+      width: 50%;
+    }
+
+    /* Add a color to the cancel button */
+    .cancelbtn {
+      background-color: #ccc;
+      color: black;
+    }
+
+    /* Add a color to the delete button */
+    .deletebtn {
+      background-color: #f44336;
+    }
+
+    /* Add padding and center-align text to the container */
+    .container {
+      padding: 16px;
+      text-align: center;
+    }
+
+    /* The Modal (background) */
+    .modal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      /* Stay in place */
+      z-index: 1;
+      /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%;
+      /* Full width */
+      height: 100%;
+      /* Full height */
+      overflow: auto;
+      /* Enable scroll if needed */
+      background-color: #474e5d;
+      padding-top: 50px;
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto 15% auto;
+      /* 5% from the top, 15% from the bottom and centered */
+      border: 1px solid #888;
+      width: 80%;
+      /* Could be more or less, depending on screen size */
+    }
+
+    /* Style the horizontal ruler */
+    hr {
+      border: 1px solid #f1f1f1;
+      margin-bottom: 25px;
+    }
+
+    /* The Modal Close Button (x) */
+    .close {
+      position: absolute;
+      right: 35px;
+      top: 15px;
+      font-size: 40px;
+      font-weight: bold;
+      color: #f1f1f1;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #f44336;
+      cursor: pointer;
+    }
+
+    /* Clear floats */
+    .clearfix::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+
+    /* Change styles for cancel button and delete button on extra small screens */
+    @media screen and (max-width: 300px) {
+
+      .cancelbtn,
+      .deletebtn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="modal" class="modal">
+    <span onclick="document.getElementById('modal').style.display='none'" class="close"
+      title="Close Modal">&times;</span>
+    <form class="modal-content" action="/action_page.php">
+      <div class="container">
+        <h1>Update the value of</h1>
+        <input type="text" value="" id="editInput" />
+        <div class="clearfix">
+          <button type="button" class="cancelbtn">Cancel</button>
+          <button type="button" class="deletebtn">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <svg width="1000.0000" stroke-opacity="1" stroke="rgb(0,0,0)" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0.0 0.0 1000.0 176.47058823529406" font-size="1" height="176.4706" version="1.1"><defs></defs><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id1" stroke-linecap="butt" stroke-width="1.6803361008336115" stroke-miterlimit="10.0" fill-opacity="0.0" id="&quot;2&quot;"><path d="M 1000.0000,176.4706 l -0.0000,-176.4706 h -352.9412 l -0.0000,176.4706 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id1" stroke-linecap="butt" stroke-width="1.6803361008336115" font-size="147.0588235294117px" stroke-miterlimit="10.0" fill-opacity="1.0" id="&quot;2&quot;"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,823.5294,88.2353)" text-anchor="middle">&quot;2&quot;</text></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id0" stroke-linecap="butt" stroke-width="1.6803361008336115" stroke-miterlimit="10.0" fill-opacity="0.0" id="&quot;1&quot;"><path d="M 352.9412,176.4706 l -0.0000,-176.4706 h -352.9412 l -0.0000,176.4706 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id0" stroke-linecap="butt" stroke-width="1.6803361008336115" font-size="147.0588235294117px" stroke-miterlimit="10.0" fill-opacity="1.0" id="&quot;1&quot;"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,176.4706,88.2353)" text-anchor="middle">&quot;1&quot;</text></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.6803361008336115" stroke-miterlimit="10.0" fill-opacity="0.0"><path d="M 362.6031,88.2353 h 252.7350 "/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 637.3969,88.2353 l -26.0705,-8.4708 l 4.4534,8.4708 l -4.4534,8.4708 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 615.7798,88.2353 h -0.4417 v -0.8402 l 0.4417,0.8402 h -0.4417 v 0.8402 Z"/></g></svg>
+  <script>
+    var modal = document.getElementById('modal');
+    var input = document.getElementById('editInput');
+    // const vscode = acquireVsCodeApi();
+    const ids = ["id0","id1"];
+    ids.forEach(id => {
+      const els = document.querySelectorAll('.' + id);
+      console.log(els);
+      els.forEach(el => {
+        console.log(el.id);
+        el.addEventListener('click', event => {
+          console.log(el.id);
+          openModal(el.id);
+          // vscode.postMessage({ id: el.id });
+        })
+      });
+    });
+
+    function openModal(n) {input.value = n;modal.style.display = "block";}
+
+    function closeModal() {modal.style.display = "none";}
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+</body>
+
+</html>
