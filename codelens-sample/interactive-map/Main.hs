@@ -13,4 +13,4 @@ import qualified Data.Text as T
 main = do
     print "working?"
     print File.l2
-    printMappedSvgToFile "out1.html" (prettyPrintWithMap File.l4)
+    printMappedSvgToFile "out1.html" (prettyPrintWithMap File.l3)

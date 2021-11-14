@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cp from 'child_process';);
+import * as cp from 'child_process';
 
 const readFile = async (filePath: fs.PathLike): Promise<string> => {
   try {
@@ -68,8 +68,16 @@ export function activate(context: vscode.ExtensionContext) {
       ]);
       console.log(highlight);
 
-      cp.execSync('cabal run --ghc-options=-i/afs/inf.ed.ac.uk/user/s18/s1853050/UNI2/HP/demo', { cwd: path.join(context.extensionPath, 'interactive-map') });
-
+      const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/").replace('c','C');
+      console.log(cwd);
+      const cmd = `cabal run --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+      console.log(cmd);
+      try {
+        console.log(cp.execSync(cmd, { cwd }));
+      }
+      catch(err) {
+        console.log(err);
+      }
       const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
 
       // // Create and show panel

@@ -5,7 +5,6 @@ const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
-;
 const readFile = async (filePath) => {
     try {
         return fs.promises.readFile(filePath, 'utf8');
@@ -64,7 +63,16 @@ function activate(context) {
             ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
         ]);
         console.log(highlight);
-        cp.execSync('cabal run --ghc-options=-i/afs/inf.ed.ac.uk/user/s18/s1853050/UNI2/HP/demo', { cwd: path.join(context.extensionPath, 'interactive-map') });
+        const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/").replace('c', 'C');
+        console.log(cwd);
+        const cmd = `cabal run --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+        console.log(cmd);
+        try {
+            console.log(cp.execSync(cmd, { cwd }));
+        }
+        catch (err) {
+            console.log(err);
+        }
         const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
         // // Create and show panel
         // const panel = vscode.window.createWebviewPanel(
