@@ -140,26 +140,7 @@
       </div>
     </form>
   </div>
-  <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="1000.0000" stroke-opacity="1" stroke="rgb(0,0,0)" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0.0 0.0 1000.0 124.99999999999993" font-size="1" height="125.0000" version="1.1"><defs></defs><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.4142135623730947" stroke-miterlimit="10.0" fill-opacity="0.0"><path d="M 1000.0000,125.0000 l -0.0000,-125.0000 h -1000.0000 l -0.0000,125.0000 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.4142135623730947" font-size="104.16666666666661px" stroke-miterlimit="10.0" fill-opacity="1.0"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,500.0000,62.5000)" text-anchor="middle">&quot;ciao mamma&quot;</text></g></svg><script>
-    // const vscode = acquireVsCodeApi();
-    const ids = [];
-    ids.forEach(id => {
-      const modal = document.getElementById('modal');
-      const editInput = document.getElementById('editInput');
-      const els = document.querySelectorAll('.' + id);
-        console.log(els);
-        els.forEach(el => {
-            console.log(el.id);
-            el.addEventListener('click', event => {
-                console.log(el.id);
-                editInput.value = el.id;
-                modal.style.display = 'block';
-                // vscode.postMessage({ id: el.id });
-        })});
-    });
-</script><!-- ### ADD HTML AFTER HERE ### -->
+  <!-- ### ADD HTML AFTER HERE ### -->
 </body>
 
 </html>
