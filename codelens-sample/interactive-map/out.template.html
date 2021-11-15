@@ -46,7 +46,7 @@
 
     /* Add a color to the delete button */
     .deletebtn {
-      background-color: #f44336;
+      /* background-color: #f44336; */
     }
 
     /* Add padding and center-align text to the container */
@@ -71,17 +71,17 @@
       /* Full height */
       overflow: auto;
       /* Enable scroll if needed */
-      background-color: #474e5d;
-      padding-top: 50px;
+      /* background-color: #474e5d; */
+      /* padding-top: 50px; */
     }
 
     /* Modal Content/Box */
     .modal-content {
       background-color: #fefefe;
-      margin: 5% auto 15% auto;
+      /* margin: 5% auto 15% auto; */
       /* 5% from the top, 15% from the bottom and centered */
-      border: 1px solid #888;
-      width: 80%;
+      /* border: 1px solid #888; */
+      /* width: 80%; */
       /* Could be more or less, depending on screen size */
     }
 
@@ -103,7 +103,7 @@
 
     .close:hover,
     .close:focus {
-      color: #f44336;
+      /* color: #f44336; */
       cursor: pointer;
     }
 
@@ -135,12 +135,38 @@
         <input type="text" value="" id="editInput" />
         <div class="clearfix">
           <button type="button" class="cancelbtn">Cancel</button>
-          <button type="button" class="deletebtn">Update</button>
+          <button type="button" class="deletebtn" id="submitButton">Update</button>
         </div>
       </div>
     </form>
   </div>
   <!-- ### ADD HTML AFTER HERE ### -->
+  <!-- <script>const ids = [1,2,3]</script> -->
+  <script>
+    console.log(ids);
+    const vscode = acquireVsCodeApi();
+    const modal = document.getElementById('modal');
+    const editInput = document.getElementById('editInput');
+    const submitButton = document.getElementById('submitButton');
+    ids.forEach(id => {
+      const els = document.querySelectorAll('.' + id);
+      console.log(els);
+      els.forEach(el => {
+        console.log(el.id);
+        el.addEventListener('click', event => {
+          console.log(el.id);
+          console.log(el.id);
+          editInput.value = el.id;
+          modal.style.display = 'block';
+          submitButton.addEventListener('click', event => {
+            const pld = { id: el.id, key: el.id, value: editInput.value };
+            console.log(pld);
+            vscode.postMessage(pld);
+          });
+        })
+      });
+    });
+    </script>
 </body>
 
-</html>
+</html >

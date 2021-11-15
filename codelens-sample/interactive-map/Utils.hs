@@ -29,23 +29,7 @@ generateHTML ids svg = svg <> generateCallbacks ids
 generateCallbacks :: [String] -> B.ByteString
 generateCallbacks ids = ""
     <> "<script>\n"
-    <> "    const vscode = acquireVsCodeApi();\n"
-    <> "    const modal = document.getElementById('modal');\n"
-    <> "    const editInput = document.getElementById('editInput');\n"
     <> "    const ids = " <> C.pack (show ids) <> ";\n"
-    <> "    ids.forEach(id => {\n"
-    <> "        const els = document.querySelectorAll('.' + id);\n"
-    <> "        console.log(els);\n"
-    <> "        els.forEach(el => {\n"
-    <> "            console.log(el.id);\n"
-    <> "            el.addEventListener('click', event => {\n"
-    <> "                console.log(el.id);\n"
-    <> "                console.log(el.id);\n"
-    <> "                editInput.value = el.id;\n"
-    <> "                modal.style.display = 'block';\n"
-    <> "                vscode.postMessage({ id: el.id });\n"
-    <> "        })});\n"
-    <> "    });\n"
     <> "</script>"
 
 printSvgToByte path svg =

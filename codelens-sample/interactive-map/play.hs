@@ -2,19 +2,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleContexts          #-}
 
-class PrettyPrintable t where
+class Displayable t where
   f :: t -> Int 
 
 
-instance (Num a, Show a) => PrettyPrintable a where
+instance (Num a, Show a) => Displayable a where
   f _ = 0
 
 
-instance {-# OVERLAPPABLE #-} (PrettyPrintable a, Show a) => PrettyPrintable [a] where
+instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Displayable [a] where
   f _ = 1
 
 
-h :: PrettyPrintable t => t -> Int
+h :: Displayable t => t -> Int
 h = f
 
 b :: [Int]

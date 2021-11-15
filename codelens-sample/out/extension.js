@@ -28,21 +28,6 @@ const replaceInFile = async (templatePath, filePath, reps) => {
     }
 };
 function activate(context) {
-    // vscode.commands.registerCommand('myExtension.sayHello', () => {
-    //   if (!vscode.window.activeTextEditor) {
-    //       return;
-    //   }
-    //   const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, 2, 10);
-    //   inset.onDidDispose(() => {
-    //       console.log('WEBVIEW disposed...');
-    //   });
-    //   fs.readFile(path.join(context.extensionPath,'out1.html'),(err,data) => {
-    //     if(err) { console.error(err); }
-    //     console.log(data.toString());
-    //     inset.webview.html = data.toString();
-    //   });
-    //   // inset.webview.html = `<head><meta></head><body><img src="https://imgs.xkcd.com/comics/plutonium.png"/><body>`;
-    // });
     context.subscriptions.push(vscode.commands.registerCommand('catCoding.start', async () => {
         if (!vscode.window.activeTextEditor) {
             return;
@@ -54,8 +39,8 @@ function activate(context) {
         const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
         const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
         await replaceInFile(tempSettingPath, injeSettingPath, [["###REPLACE WITH DIRECTORY OF PROJECT###", dir]]);
-        const tempMainPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs.template');
-        const injeMainPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs');
+        const tempMainPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs.template');
+        const injeMainPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs');
         const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
         const highlight = editor.document.getText(wordRange);
         await replaceInFile(tempMainPath, injeMainPath, [
@@ -63,108 +48,59 @@ function activate(context) {
             ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
         ]);
         console.log(highlight);
-        const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/").replace('c', 'C');
+        const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/"); //.replace('c','C');
         console.log(cwd);
-        const cmd = `cabal run --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+        const cmd = `cabal run MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
         console.log(cmd);
         try {
-            console.log(cp.execSync(cmd, { cwd }));
+            console.log(cp.execSync(cmd, { cwd }).toString());
         }
         catch (err) {
             console.log(err);
         }
         const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
-        // // Create and show panel
-        // const panel = vscode.window.createWebviewPanel(
-        //   'catCoding',
-        //   'Cat Coding',
-        //   vscode.ViewColumn.One,
-        //   {
-        //     // Enable scripts in the webview
-        //     enableScripts: true
-        //   }
-        // );
-        // panel.webview.html = data.toString();
-        // // panel.webview.html = data;
-        // // Handle messages from the webview
-        // panel.webview.onDidReceiveMessage(
-        //   message => {
-        //     vscode.window.showErrorMessage(message.id);
-        //     return;
-        //   },
-        //   undefined,
-        //   context.subscriptions
-        // );
         const line = editor.selection.active.line;
-        // const inset = vscode.window.createWebviewTextEditorInset(editor, line, 10);
         const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 10, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
-        inset.webview.onDidReceiveMessage(message => {
+        inset.webview.onDidReceiveMessage(async (message) => {
+            console.log(message);
             vscode.window.showErrorMessage(message.id);
+            const { key, value } = message;
+            const tempMainPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs.template');
+            const injeMainPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
+            await replaceInFile(tempMainPath, injeMainPath, [
+                ["###REPLACE WITH NAME OF MODULE###", name],
+                ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight],
+                ["###REPLACE WITH KEY###", key],
+                ["###REPLACE WITH VALUE###", value]
+            ]);
+            const cmd = `cabal run MainEdit --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+            console.log(cmd);
+            let result = "";
+            try {
+                result = cp.execSync(cmd, { cwd }).toString();
+            }
+            catch (err) {
+                console.log(err);
+                return;
+            }
+            console.log(result);
+            const mid = result.split('\n');
+            const newValue = mid[mid.length - 2];
+            var startposition = new vscode.Position(line, 0);
+            var endingposition = new vscode.Position(line + 1, 0);
+            var range = new vscode.Range(startposition, endingposition);
+            editor.edit(editBuilder => {
+                editBuilder.replace(range, `${highlight} = ${newValue}\n`);
+            });
+            console.log(`${highlight} = ${newValue}`);
+            console.log(range);
             return;
         }, undefined, context.subscriptions);
         inset.onDidDispose(() => {
             console.log('WEBVIEW disposed...:(');
         });
         inset.webview.html = data;
-        // const rootUrl = vscode.Uri.file(context.extensionPath);
-        // const inset = vscode.window.createWebviewTextEditorInset(
-        //   vscode.window.activeTextEditor, 5, 30,
-        //   { localResourceRoots: [ rootUrl ], enableScripts: true, }
-        //   );
-        // inset.onDidDispose(() => {
-        //     console.log('WEBVIEW disposed...');
-        // });
-        // inset.webview.html = getWebviewContent();
-        // console.log("Hey");
     }));
 }
 exports.activate = activate;
-// function getWebviewContent() {
-// return(fs.readFile('out1.html',(err,data) => {
-//   if(err) { console.error(err); }
-//     resultPanel.webview.html = data;
-// }));
-//   return `<!DOCTYPE html>
-// <html lang="en">
-// <head>
-//     <meta charset="UTF-8">
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//     <title>Cat Coding</title>
-// </head>
-// <body>
-//     <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
-// </body>
-// </html>`;
-// }
-// // The module 'vscode' contains the VS Code extensibility API
-// // Import the module and reference it with the alias vscode in your code below
-// // import { ExtensionContext, commands, window } from 'vscode';
-// import * as vscode from 'vscode';
-// // this method is called when your extension is activated
-// // your extension is activated the very first time the command is executed
-// export function activate(context: vscode.ExtensionContext) {
-//   vscode.commands.registerCommand('myExtension.sayHello', () => {
-//     if (!vscode.window.activeTextEditor) {
-//         return;
-//     }
-//     const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, 2, 10);
-//     inset.onDidDispose(() => {
-//         console.log('WEBVIEW disposed...');
-//     });
-//     inset.webview.html = `<head><meta></head><body><img src="https://imgs.xkcd.com/comics/plutonium.png"/><body>`;
-//   });
-// }
-function getWebviewContent() {
-    return `<!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Cat Coding</title>
-  </head>
-  <body>
-      <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
-  </body>
-  </html>`;
-}
 //# sourceMappingURL=extension.js.map

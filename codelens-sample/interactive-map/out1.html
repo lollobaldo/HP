@@ -46,7 +46,7 @@
 
     /* Add a color to the delete button */
     .deletebtn {
-      background-color: #f44336;
+      /* background-color: #f44336; */
     }
 
     /* Add padding and center-align text to the container */
@@ -71,17 +71,17 @@
       /* Full height */
       overflow: auto;
       /* Enable scroll if needed */
-      background-color: #474e5d;
-      padding-top: 50px;
+      /* background-color: #474e5d; */
+      /* padding-top: 50px; */
     }
 
     /* Modal Content/Box */
     .modal-content {
       background-color: #fefefe;
-      margin: 5% auto 15% auto;
+      /* margin: 5% auto 15% auto; */
       /* 5% from the top, 15% from the bottom and centered */
-      border: 1px solid #888;
-      width: 80%;
+      /* border: 1px solid #888; */
+      /* width: 80%; */
       /* Could be more or less, depending on screen size */
     }
 
@@ -103,7 +103,7 @@
 
     .close:hover,
     .close:focus {
-      color: #f44336;
+      /* color: #f44336; */
       cursor: pointer;
     }
 
@@ -135,31 +135,42 @@
         <input type="text" value="" id="editInput" />
         <div class="clearfix">
           <button type="button" class="cancelbtn">Cancel</button>
-          <button type="button" class="deletebtn">Update</button>
+          <button type="button" class="deletebtn" id="submitButton">Update</button>
         </div>
       </div>
     </form>
   </div>
   <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="1000.0000" stroke-opacity="1" stroke="rgb(0,0,0)" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0.0 0.0 1000.0 124.99999999999993" font-size="1" height="125.0000" version="1.1"><defs></defs><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.4142135623730947" stroke-miterlimit="10.0" fill-opacity="0.0"><path d="M 1000.0000,125.0000 l -0.0000,-125.0000 h -1000.0000 l -0.0000,125.0000 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.4142135623730947" font-size="104.16666666666661px" stroke-miterlimit="10.0" fill-opacity="1.0"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,500.0000,62.5000)" text-anchor="middle">&quot;ciao mamma&quot;</text></g></svg><script>
-    // const vscode = acquireVsCodeApi();
-    const ids = [];
-    ids.forEach(id => {
-      const modal = document.getElementById('modal');
-      const editInput = document.getElementById('editInput');
-      const els = document.querySelectorAll('.' + id);
-        console.log(els);
-        els.forEach(el => {
-            console.log(el.id);
-            el.addEventListener('click', event => {
-                console.log(el.id);
-                editInput.value = el.id;
-                modal.style.display = 'block';
-                // vscode.postMessage({ id: el.id });
-        })});
-    });
+    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="1000.0000" stroke-opacity="1" stroke="rgb(0,0,0)" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0.0 0.0 1000.0 187.5" font-size="1" height="187.5000" version="1.1"><defs></defs><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id2" stroke-linecap="butt" stroke-width="1.7320508075688772" stroke-miterlimit="10.0" fill-opacity="0.0" id="2"><path d="M 1000.0000,187.5000 l -0.0000,-187.5000 h -125.0000 l -0.0000,187.5000 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id2" stroke-linecap="butt" stroke-width="1.7320508075688772" font-size="156.25px" stroke-miterlimit="10.0" fill-opacity="1.0" id="2"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,937.5000,93.7500)" text-anchor="middle">3</text></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id1" stroke-linecap="butt" stroke-width="1.7320508075688772" stroke-miterlimit="10.0" fill-opacity="0.0" id="1"><path d="M 562.5000,187.5000 l -0.0000,-187.5000 h -125.0000 l -0.0000,187.5000 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id1" stroke-linecap="butt" stroke-width="1.7320508075688772" font-size="156.25px" stroke-miterlimit="10.0" fill-opacity="1.0" id="1"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,500.0000,93.7500)" text-anchor="middle">2</text></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.7320508075688772" stroke-miterlimit="10.0" fill-opacity="0.0"><path d="M 572.4593,93.7500 h 269.1439 "/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 865.0407,93.7500 l -27.7168,-9.0057 l 4.7346,9.0057 l -4.7346,9.0057 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 842.0585,93.7500 h -0.4553 v -0.8660 l 0.4553,0.8660 h -0.4553 v 0.8660 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id0" stroke-linecap="butt" stroke-width="1.7320508075688772" stroke-miterlimit="10.0" fill-opacity="0.0" id="0"><path d="M 125.0000,187.5000 l -0.0000,-187.5000 h -125.0000 l -0.0000,187.5000 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id0" stroke-linecap="butt" stroke-width="1.7320508075688772" font-size="156.25px" stroke-miterlimit="10.0" fill-opacity="1.0" id="0"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,62.5000,93.7500)" text-anchor="middle">1</text></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.7320508075688772" stroke-miterlimit="10.0" fill-opacity="0.0"><path d="M 134.9593,93.7500 h 269.1439 "/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 427.5407,93.7500 l -27.7168,-9.0057 l 4.7346,9.0057 l -4.7346,9.0057 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 404.5585,93.7500 h -0.4553 v -0.8660 l 0.4553,0.8660 h -0.4553 v 0.8660 Z"/></g></svg><script>
+    const ids = ["id0","id1","id2"];
 </script><!-- ### ADD HTML AFTER HERE ### -->
+  <!-- <script>const ids = [1,2,3]</script> -->
+  <script>
+    console.log(ids);
+    const vscode = acquireVsCodeApi();
+    const modal = document.getElementById('modal');
+    const editInput = document.getElementById('editInput');
+    const submitButton = document.getElementById('submitButton');
+    ids.forEach(id => {
+      const els = document.querySelectorAll('.' + id);
+      console.log(els);
+      els.forEach(el => {
+        console.log(el.id);
+        el.addEventListener('click', event => {
+          console.log(el.id);
+          console.log(el.id);
+          editInput.value = el.id;
+          modal.style.display = 'block';
+          submitButton.addEventListener('click', event => {
+            const pld = { id: el.id, key: el.id, value: editInput.value };
+            console.log(pld);
+            vscode.postMessage(pld);
+          });
+        })
+      });
+    });
+    </script>
 </body>
 
-</html>
+</html >

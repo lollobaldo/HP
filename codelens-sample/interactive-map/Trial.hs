@@ -4,7 +4,7 @@
 
 module Trial where
 
--- import PrettyPrintable
+-- import Displayable
 -- import List
 -- import Utils
 
