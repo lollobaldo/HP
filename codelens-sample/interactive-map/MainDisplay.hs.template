@@ -15,4 +15,6 @@ import Utils ( injectSvgToFile )
 
 main = do
     template <- B.readFile "out.template.html"
-    injectSvgToFile "out1.html" template (prettyPrintWithMap File.###REPLACE WITH IDENTIFIER OF EXPRESSION###)
+    let obj = File.###REPLACE WITH IDENTIFIER OF EXPRESSION###
+    print obj
+    injectSvgToFile "out1.html" template (prettyPrintWithMap obj)

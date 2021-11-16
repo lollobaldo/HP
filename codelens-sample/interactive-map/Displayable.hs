@@ -41,7 +41,7 @@ getKeys t = toList $ evalState (traverse go t) 0
               return n
 
 class (Foldable t) => Editable t where
-  editAtKey :: t a -> Key -> Maybe a -> t a
+  editAtKey :: t (Key, a) -> Key -> Maybe a -> t a
 
 
 prettyPrintWithMap :: (Traversable t, Displayable (t a)) => t a -> (D.Diagram D.SVG, Map)

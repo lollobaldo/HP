@@ -4,7 +4,7 @@ module Main where
 
 import qualified Data.ByteString.Char8 as B
 
-import qualified Other as File
+import qualified Demo as File
 import Displayable
 import List
 import Tree
@@ -14,6 +14,6 @@ import Utils ( injectSvgToFile )
 -- import qualified Data.Text as T
 
 main = do
-    let key = 6
+    let key = 1
     let val = Nothing
-    print $ editAtKey File.tree1 key val
+    print $ editAtKey (annotate File.l3) key val

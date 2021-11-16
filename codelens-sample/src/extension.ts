@@ -26,17 +26,32 @@ const replaceInFile = async (templatePath: fs.PathLike, filePath: fs.PathLike, r
 };
 
 export function activate(context: vscode.ExtensionContext) {
+  const generateHtml = async (dir: string, cwd: string) => {
+    const cmd = `cabal run MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+    console.log(cmd);
+    try {
+      console.log(cp.execSync(cmd, { cwd }).toString());
+    }
+    catch(err) {
+      console.log(err);
+    }
+    const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
+    return data;
+  };
+
   context.subscriptions.push(
     vscode.commands.registerCommand('catCoding.start', async () => {
       if (!vscode.window.activeTextEditor) {
         return;
       }
       const editor = vscode.window.activeTextEditor;
+      const document = editor.document;
       
       const filename = editor.document.fileName;
       let { name, dir } = path.parse(filename);
       if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
-      console.log(filename, dir, name);
+
+      const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
 
       const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
       const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
@@ -52,18 +67,6 @@ export function activate(context: vscode.ExtensionContext) {
         ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
       ]);
       console.log(highlight);
-
-      const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
-      console.log(cwd);
-      const cmd = `cabal run MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
-      console.log(cmd);
-      try {
-        console.log(cp.execSync(cmd, { cwd }).toString());
-      }
-      catch(err) {
-        console.log(err);
-      }
-      const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
 
       const line = editor.selection.active.line;
       const inset = vscode.window.createWebviewTextEditorInset(
@@ -107,8 +110,8 @@ export function activate(context: vscode.ExtensionContext) {
           editor.edit(editBuilder => {
             editBuilder.replace(range, `${highlight} = ${newValue}\n`);
           });
-          console.log(`${highlight} = ${newValue}`);
-          console.log(range);
+          await document.save();
+          inset.webview.html = await generateHtml(dir, cwd);
           return;
         },
         undefined,
@@ -117,7 +120,8 @@ export function activate(context: vscode.ExtensionContext) {
       inset.onDidDispose(() => {
         console.log('WEBVIEW disposed...:(');
       });
-      inset.webview.html = data;
+
+      inset.webview.html = await generateHtml(dir, cwd);
     })
   );
 }

@@ -12,9 +12,9 @@ import qualified Data.Text as T
 l1, l2, l3 :: [Int]
 l1 = []
 l2 = [1..100]
-l3 = [1,2,3]
+l3 = [1,3, 4, 6]
 
-l4 = [1,2,3]
+l4 = [1,3]
 
 l5 :: [String]
 l5=["1", "2"]

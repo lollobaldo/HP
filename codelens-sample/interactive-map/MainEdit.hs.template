@@ -16,4 +16,4 @@ import Utils ( injectSvgToFile )
 main = do
     let key = ###REPLACE WITH KEY###
     let val = ###REPLACE WITH VALUE###
-    print $ editAtKey File.###REPLACE WITH IDENTIFIER OF EXPRESSION### key val
+    print $ editAtKey (annotate File.###REPLACE WITH IDENTIFIER OF EXPRESSION###) key val

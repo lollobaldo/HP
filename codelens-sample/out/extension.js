@@ -28,16 +28,29 @@ const replaceInFile = async (templatePath, filePath, reps) => {
     }
 };
 function activate(context) {
+    const generateHtml = async (dir, cwd) => {
+        const cmd = `cabal run MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+        console.log(cmd);
+        try {
+            console.log(cp.execSync(cmd, { cwd }).toString());
+        }
+        catch (err) {
+            console.log(err);
+        }
+        const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
+        return data;
+    };
     context.subscriptions.push(vscode.commands.registerCommand('catCoding.start', async () => {
         if (!vscode.window.activeTextEditor) {
             return;
         }
         const editor = vscode.window.activeTextEditor;
+        const document = editor.document;
         const filename = editor.document.fileName;
         let { name, dir } = path.parse(filename);
         if (dir[1] === ':')
             dir = dir.replace(dir[0], dir[0].toUpperCase());
-        console.log(filename, dir, name);
+        const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
         const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
         const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
         await replaceInFile(tempSettingPath, injeSettingPath, [["###REPLACE WITH DIRECTORY OF PROJECT###", dir]]);
@@ -50,17 +63,6 @@ function activate(context) {
             ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
         ]);
         console.log(highlight);
-        const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
-        console.log(cwd);
-        const cmd = `cabal run MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
-        console.log(cmd);
-        try {
-            console.log(cp.execSync(cmd, { cwd }).toString());
-        }
-        catch (err) {
-            console.log(err);
-        }
-        const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
         const line = editor.selection.active.line;
         const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 12, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
         inset.webview.onDidReceiveMessage(async (message) => {
@@ -96,14 +98,14 @@ function activate(context) {
             editor.edit(editBuilder => {
                 editBuilder.replace(range, `${highlight} = ${newValue}\n`);
             });
-            console.log(`${highlight} = ${newValue}`);
-            console.log(range);
+            await document.save();
+            inset.webview.html = await generateHtml(dir, cwd);
             return;
         }, undefined, context.subscriptions);
         inset.onDidDispose(() => {
             console.log('WEBVIEW disposed...:(');
         });
-        inset.webview.html = data;
+        inset.webview.html = await generateHtml(dir, cwd);
     }));
 }
 exports.activate = activate;

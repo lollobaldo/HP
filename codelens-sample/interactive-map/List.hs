@@ -15,19 +15,13 @@ import Utils
 
 instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Displayable [a] where
   prettyPrint = fst . prettyPrintListWithMap 0
-  -- prettyPrintWithMap = prettyPrintListWithMap 0
-
--- instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Mappable [a] where
---   prettyPrintWithMap = prettyPrintListWithMap 0
 
 instance Editable [] where
-  editAtKey l k mv = snd $ foldr go (0, mempty) l
+  editAtKey l k mv = go l
     where
-      -- go :: Monoid (t a) => a -> (Key, t a) -> (Key, t a)
-      -- go _ []     = error "Key not found"
-      go x (i, xs)
-        | i == k    = (i+1, maybe mempty return mv <> xs)
-        | otherwise = (i+1, return x <> xs)
+      go ((i, x):xs)
+        | i == k    = maybe mempty return mv <> map snd xs
+        | otherwise = return x <> go xs
 
 prettyPrintListWithMap :: (Displayable a, Show a) => Int -> [a] ->  (D.Diagram D.SVG, Map)
 prettyPrintListWithMap _ [] = (mempty, mempty)
