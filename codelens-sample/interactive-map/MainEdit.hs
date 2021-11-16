@@ -13,6 +13,6 @@ import Utils ( injectSvgToFile )
 -- import qualified Data.Text as T
 
 main = do
-    let key = 1
-    let val = 5
-    print $ editAtKey File.l4 key val
+    let key = 2
+    let val = Nothing
+    print $ editAtKey File.l3 key val

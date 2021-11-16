@@ -40,7 +40,7 @@
 
     /* Add a color to the cancel button */
     .cancelbtn {
-      background-color: #ccc;
+      background-color: #f66;
       color: black;
     }
 
@@ -134,8 +134,8 @@
         <h1>Update the value of</h1>
         <input type="text" value="" id="editInput" />
         <div class="clearfix">
-          <button type="button" class="cancelbtn">Cancel</button>
-          <button type="button" class="deletebtn" id="submitButton">Update</button>
+          <button type="button" class="cancelbtn" id="removeButton">Remove</button>
+          <button type="button" class="deletebtn" id="updateButton">Update</button>
         </div>
       </div>
     </form>
@@ -147,7 +147,8 @@
     const vscode = acquireVsCodeApi();
     const modal = document.getElementById('modal');
     const editInput = document.getElementById('editInput');
-    const submitButton = document.getElementById('submitButton');
+    const removeButton = document.getElementById('removeButton');
+    const submitButton = document.getElementById('updateButton');
     ids.forEach(id => {
       const els = document.querySelectorAll('.' + id);
       console.log(els);
@@ -158,11 +159,14 @@
           console.log(el.id);
           editInput.value = el.id;
           modal.style.display = 'block';
-          submitButton.addEventListener('click', event => {
-            const pld = { id: el.id, key: el.id, value: editInput.value };
+          const cb = event => {
+            console.log(event);
+            const pld = { id: el.id, key: el.id, value: editInput.value, isRemove: event.target.id === 'removeButton' };
             console.log(pld);
             vscode.postMessage(pld);
-          });
+          };
+          removeButton.addEventListener('click', cb);
+          submitButton.addEventListener('click', cb);
         })
       });
     });

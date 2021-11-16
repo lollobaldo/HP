@@ -8,6 +8,8 @@
 
 module Displayable where
 
+import Data.List
+
 import qualified Diagrams.Prelude             as D
 import qualified Diagrams.Backend.SVG         as D
 
@@ -20,15 +22,16 @@ type Map = [(String, String)]
 type Key = Int
 
 class (Foldable t) => Editable t where
-  editAtKey :: t a -> Key -> a -> t a
+  editAtKey :: t a -> Key -> Maybe a -> t a
 
--- editAtKey :: (Foldable t, Functor t) => t a -> Key -> a -> t a
--- editAtKey l k v = snd $ foldr go (0, mempty) l
+-- label = flip evalState 0 . mapM (\a -> get >>= \i -> modify (+1) >> return (a,i))
+
+-- editAtKey :: (Traversable t, Applicative t, Monoid (t a)) => t a -> Key -> Maybe a -> t a
+-- editAtKey l k mv = snd $ foldl' go (0, mempty) l
 --   where
---     go :: Monoid (t a) => a -> (Key, t a) -> (Key, t a)
---     go c (i, acc)
---       | i == k = (i+1, return v <> acc)
---       | otherwise = (i+1, return c <> acc)
+--     go (i, xs) x
+--       | i == k    = (i+1, xs <> maybe mempty pure mv)
+--       | otherwise = (i+1, xs <> pure x)
 
 class (Displayable t) => Mappable t where
   prettyPrintWithMap :: t -> (D.Diagram D.SVG, Map)

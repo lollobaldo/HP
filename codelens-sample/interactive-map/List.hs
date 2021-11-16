@@ -4,6 +4,8 @@
 
 module List where
 
+import Data.Maybe
+
 import Diagrams.Prelude ((#), (.~), (&))
 import qualified Diagrams.Prelude             as D
 import qualified Diagrams.Backend.SVG         as D
@@ -17,13 +19,22 @@ instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Displayable [a] where
 instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Mappable [a] where
   prettyPrintWithMap = prettyPrintListWithMap 0
 
+-- instance Editable [] where
+--   editAtKey l k v = go 0 l
+--     where
+--       go _ []     = error "Key not found"
+--       go i (x:xs)
+--         | i == k    = return v <> xs
+--         | otherwise = return x <> go (i+1) xs
+
 instance Editable [] where
-  editAtKey l k v = go 0 l
+  editAtKey l k mv = snd $ foldr go (0, mempty) l
     where
-      go _ []     = error "Key not found"
-      go i (x:xs)
-        | i == k    = return v <> xs
-        | otherwise = return x <> go (i+1) xs
+      -- go :: Monoid (t a) => a -> (Key, t a) -> (Key, t a)
+      -- go _ []     = error "Key not found"
+      go x (i, xs)
+        | i == k    = (i+1, maybe mempty return mv <> xs)
+        | otherwise = (i+1, return x <> xs)
 
 prettyPrintListWithMap :: (Displayable a, Show a) => Int -> [a] ->  (D.Diagram D.SVG, Map)
 prettyPrintListWithMap _ [] = (mempty, mempty)

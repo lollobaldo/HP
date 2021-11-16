@@ -34,7 +34,8 @@ export function activate(context: vscode.ExtensionContext) {
       const editor = vscode.window.activeTextEditor;
       
       const filename = editor.document.fileName;
-      const { name, dir } = path.parse(filename);
+      let { name, dir } = path.parse(filename);
+      if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
       console.log(filename, dir, name);
 
       const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
@@ -52,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
       ]);
       console.log(highlight);
 
-      const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");//.replace('c','C');
+      const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
       console.log(cwd);
       const cmd = `cabal run MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
       console.log(cmd);
@@ -73,8 +74,11 @@ export function activate(context: vscode.ExtensionContext) {
         async message => {
           console.log(message);
           vscode.window.showErrorMessage(message.id);
-          const { key, value } = message;
+          const { key, value, isRemove } = message;
           
+          const exp = isRemove ? 'Nothing' : `Just ${value}`;
+          console.log(isRemove, exp);
+
           const tempMainPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs.template');
           const injeMainPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
 
@@ -82,7 +86,7 @@ export function activate(context: vscode.ExtensionContext) {
             ["###REPLACE WITH NAME OF MODULE###", name],
             ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight],
             ["###REPLACE WITH KEY###", key],
-            ["###REPLACE WITH VALUE###", value]
+            ["###REPLACE WITH VALUE###", exp]
           ]);
           const cmd = `cabal run MainEdit --ghc-options=-i${dir}`.replace(/\\/g, "\/");
           console.log(cmd);

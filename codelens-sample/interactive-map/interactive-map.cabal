@@ -38,7 +38,6 @@ executable MainDisplay
       List
     , Displayable
     , Utils
-    , Trial
   build-depends:
         base >=4.7 && <5
     , text
@@ -59,7 +58,6 @@ executable MainEdit
       List
     , Displayable
     , Utils
-    , Trial
   build-depends:
         base >=4.7 && <5
     , text

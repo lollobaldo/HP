@@ -4,7 +4,7 @@ module Main where
 
 import qualified Data.ByteString.Char8 as B
 
-import qualified Demo as File
+import qualified Other as File
 import Displayable
 import List
 import Utils ( injectSvgToFile )
@@ -14,4 +14,4 @@ import Utils ( injectSvgToFile )
 
 main = do
     template <- B.readFile "out.template.html"
-    injectSvgToFile "out1.html" template (prettyPrintWithMap File.l4)
+    injectSvgToFile "out1.html" template (prettyPrintWithMap File.l3)
