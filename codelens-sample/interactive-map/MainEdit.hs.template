@@ -4,9 +4,10 @@ module Main where
 
 import qualified Data.ByteString.Char8 as B
 
-import qualified Demo as File
+import qualified ###REPLACE WITH NAME OF MODULE### as File
 import Displayable
 import List
+import Tree
 import Utils ( injectSvgToFile )
 
 -- import qualified Data.ByteString.Lazy

@@ -23,3 +23,8 @@ l5=["1", "2"]
 ss = "ciao mamma"
 
 h = ['a', 'b']
+
+
+tree1 :: Tree Int
+tree1 = Node 1 [Node 2 (map lf [1..3]), Node 3 [Node 7 (map lf [10..13])]]
+  where lf x = Node x []

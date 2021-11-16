@@ -33,8 +33,8 @@ generateCallbacks ids = ""
     <> "</script>"
 
 printSvgToByte path svg =
-    let options = D.SVGOptions (D.mkWidth 1000) Nothing (T.pack "") [] True
-        svgDoc = D.renderDia D.SVG options svg
+    let options = D.SVGOptions (D.dims2D 800 200) Nothing (T.pack "") [] True
+        svgDoc = D.renderDia D.SVG options (D.sized (D.dims2D 800 200) svg)
     in
         L.toStrict $ Graphics.Svg.Core.renderBS svgDoc
 

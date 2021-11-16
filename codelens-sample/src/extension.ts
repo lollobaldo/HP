@@ -67,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       const line = editor.selection.active.line;
       const inset = vscode.window.createWebviewTextEditorInset(
-          vscode.window.activeTextEditor, line-1, 10,
+          vscode.window.activeTextEditor, line-1, 12,
           { localResourceRoots: [ vscode.Uri.file(context.extensionPath) ], enableScripts: true, }
       );
       inset.webview.onDidReceiveMessage(

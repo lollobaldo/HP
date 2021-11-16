@@ -62,7 +62,7 @@ function activate(context) {
         }
         const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
         const line = editor.selection.active.line;
-        const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 10, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
+        const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 12, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
         inset.webview.onDidReceiveMessage(async (message) => {
             console.log(message);
             vscode.window.showErrorMessage(message.id);

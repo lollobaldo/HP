@@ -7,6 +7,7 @@ import qualified Data.ByteString.Char8 as B
 import qualified Other as File
 import Displayable
 import List
+import Tree
 import Utils ( injectSvgToFile )
 
 -- import qualified Data.ByteString.Lazy
@@ -14,4 +15,4 @@ import Utils ( injectSvgToFile )
 
 main = do
     template <- B.readFile "out.template.html"
-    injectSvgToFile "out1.html" template (prettyPrintWithMap File.l3)
+    injectSvgToFile "out1.html" template (prettyPrintWithMap File.tree1)

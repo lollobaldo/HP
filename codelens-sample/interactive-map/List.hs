@@ -6,7 +6,7 @@ module List where
 
 import Data.Maybe
 
-import Diagrams.Prelude ((#), (.~), (&))
+import Diagrams.Prelude ((#), (.~), (&), (~~))
 import qualified Diagrams.Prelude             as D
 import qualified Diagrams.Backend.SVG         as D
 
@@ -15,17 +15,10 @@ import Utils
 
 instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Displayable [a] where
   prettyPrint = fst . prettyPrintListWithMap 0
+  -- prettyPrintWithMap = prettyPrintListWithMap 0
 
-instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Mappable [a] where
-  prettyPrintWithMap = prettyPrintListWithMap 0
-
--- instance Editable [] where
---   editAtKey l k v = go 0 l
---     where
---       go _ []     = error "Key not found"
---       go i (x:xs)
---         | i == k    = return v <> xs
---         | otherwise = return x <> go (i+1) xs
+-- instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Mappable [a] where
+--   prettyPrintWithMap = prettyPrintListWithMap 0
 
 instance Editable [] where
   editAtKey l k mv = snd $ foldr go (0, mempty) l
