@@ -3,8 +3,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cp from 'child_process';
 
+import { InteractiveProcessHandle } from './repljs';
+
 const showProgress = () => {
-  let ret;
+  let ret: (value: void | PromiseLike<void>) => void;
   const promise = new Promise<void>(resolve => {
       ret = resolve;
   });
@@ -51,6 +53,8 @@ const invalidateCache = async (filePath: fs.PathLike) => {
 };
 
 export function activate(context: vscode.ExtensionContext) {
+  var interactive_ghci = new InteractiveProcessHandle('cabal repl', []);
+
   const generateHtml = async (dir: string, cwd: string, forceRefreshPath='') => {
     if (forceRefreshPath) {
       console.log(`invalidating ${forceRefreshPath}`);
@@ -69,6 +73,11 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   context.subscriptions.push(
+    vscode.commands.registerCommand('catCoding.waffle', async () => {
+      const out1 = await interactive_ghci.call(':l MainDisplay');
+      const out2 = await interactive_ghci.call('main');
+      console.log(out1, out2);
+    },
     vscode.commands.registerCommand('catCoding.start', async () => {
       if (!vscode.window.activeTextEditor) {
         return;

@@ -16,6 +16,6 @@ import Utils ( injectSvgToFile )
 
 main = do
     template <- B.readFile "out.template.html"
-    let obj = File.tree1
+    let obj = File.l4
     print obj
     injectSvgToFile "out1.html" template (prettyPrintWithMap obj)

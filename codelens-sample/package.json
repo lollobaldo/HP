@@ -12,23 +12,21 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:myExtension.sayHello",
 		"onCommand:catCoding.start",
-		"onCommand:catCoding.doRefactor",
-		"onWebviewPanel:catCoding"
+		"onCommand:catCoding.waffle"
 	],
 	"main": "./out/extension.js",
 	"enableProposedApi": true,
 	"contributes": {
 		"commands": [
 			{
-				"command": "myExtension.sayHello",
-				"title": "Demo session",
-				"category": "Inset:"
-			},
-			{
 				"command": "catCoding.start",
 				"title": "Start cat coding session",
+				"category": "Cat Coding"
+			},
+			{
+				"command": "catCoding.waffle",
+				"title": "Waffle cat coding session",
 				"category": "Cat Coding"
 			}
 		]

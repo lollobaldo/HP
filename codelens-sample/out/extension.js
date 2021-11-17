@@ -5,6 +5,7 @@ const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
+const repljs_1 = require("./repljs");
 const showProgress = () => {
     let ret;
     const promise = new Promise(resolve => {
@@ -55,6 +56,7 @@ const invalidateCache = async (filePath) => {
     }
 };
 function activate(context) {
+    var interactive_ghci = new repljs_1.InteractiveProcessHandle('cabal repl', []);
     const generateHtml = async (dir, cwd, forceRefreshPath = '') => {
         if (forceRefreshPath) {
             console.log(`invalidating ${forceRefreshPath}`);
@@ -71,7 +73,11 @@ function activate(context) {
         const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
         return data;
     };
-    context.subscriptions.push(vscode.commands.registerCommand('catCoding.start', async () => {
+    context.subscriptions.push(vscode.commands.registerCommand('catCoding.waffle', async () => {
+        const out1 = await interactive_ghci.call(':l MainDisplay');
+        const out2 = await interactive_ghci.call('main');
+        console.log(out1, out2);
+    }, vscode.commands.registerCommand('catCoding.start', async () => {
         if (!vscode.window.activeTextEditor) {
             return;
         }
@@ -141,7 +147,7 @@ function activate(context) {
         });
         inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
         progress.end();
-    }));
+    })));
 }
 exports.activate = activate;
 //# sourceMappingURL=extension.js.map
