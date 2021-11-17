@@ -14,6 +14,6 @@ import Utils ( injectSvgToFile )
 -- import qualified Data.Text as T
 
 main = do
-    let key = 0
-    let val = Just 9
-    print $ editAtKey (annotate File.l3) key val
+    let key = 1
+    let val = Nothing
+    print $ editAtKey (annotate File.tree1) key val
