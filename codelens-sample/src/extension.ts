@@ -25,8 +25,24 @@ const replaceInFile = async (templatePath: fs.PathLike, filePath: fs.PathLike, r
   }
 };
 
+const invalidateCache = async (filePath: fs.PathLike) => {
+  let data = await readFile(filePath);
+  console.log(data[0]);
+  if (data[0] === '\n') data = data.substring(1); else data = '\n' + data;
+  console.log(data[0])
+  try {
+    return fs.promises.writeFile(filePath, data, 'utf8');
+  } catch (err) {
+    console.error('Error occured while writing back file!', err);
+  }
+};
+
 export function activate(context: vscode.ExtensionContext) {
-  const generateHtml = async (dir: string, cwd: string) => {
+  const generateHtml = async (dir: string, cwd: string, forceRefreshPath='') => {
+    if (forceRefreshPath) {
+      console.log(`invalidating ${forceRefreshPath}`);
+      await invalidateCache(forceRefreshPath);
+    }
     const cmd = `cabal run MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
     console.log(cmd);
     try {
@@ -57,12 +73,12 @@ export function activate(context: vscode.ExtensionContext) {
       const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
       await replaceInFile(tempSettingPath, injeSettingPath, [["###REPLACE WITH DIRECTORY OF PROJECT###", dir]]);
 
-      const tempMainPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs.template');
-      const injeMainPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs');
+      const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs.template');
+      const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs');
       
       const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
       const highlight = editor.document.getText(wordRange);
-      await replaceInFile(tempMainPath, injeMainPath, [
+      await replaceInFile(tempDispPath, injeDispPath, [
         ["###REPLACE WITH NAME OF MODULE###", name],
         ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
       ]);
@@ -82,10 +98,10 @@ export function activate(context: vscode.ExtensionContext) {
           const exp = isRemove ? 'Nothing' : `Just ${value}`;
           console.log(isRemove, exp);
 
-          const tempMainPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs.template');
-          const injeMainPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
+          const tempEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs.template');
+          const injeEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
 
-          await replaceInFile(tempMainPath, injeMainPath, [
+          await replaceInFile(tempEditPath, injeEditPath, [
             ["###REPLACE WITH NAME OF MODULE###", name],
             ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight],
             ["###REPLACE WITH KEY###", key],
@@ -111,7 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
             editBuilder.replace(range, `${highlight} = ${newValue}\n`);
           });
           await document.save();
-          inset.webview.html = await generateHtml(dir, cwd);
+          inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
           return;
         },
         undefined,
@@ -121,7 +137,7 @@ export function activate(context: vscode.ExtensionContext) {
         console.log('WEBVIEW disposed...:(');
       });
 
-      inset.webview.html = await generateHtml(dir, cwd);
+      inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
     })
   );
 }
