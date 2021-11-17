@@ -3,6 +3,8 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE FlexibleContexts, UndecidableInstances #-}
+
 
 module Tree where
 
@@ -18,6 +20,9 @@ import qualified Diagrams.TwoD.Layout.Tree  as D
 
 import Displayable
 import Utils
+
+-- instance {-# OVERLAPPING #-} Show a => Show (Tree a) where
+--   show (Node x sub) = "Node " ++ show x ++ show sub
 
 instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Displayable (Tree a) where
   prettyPrint = fst . prettyPrintTreeWithMap

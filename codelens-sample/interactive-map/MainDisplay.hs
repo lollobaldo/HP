@@ -1,11 +1,10 @@
-
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
 import qualified Data.ByteString.Char8 as B
 
-import qualified Other as File
+import qualified Demo as File
 import Displayable
 import List
 import Tree
@@ -16,6 +15,6 @@ import Utils ( injectSvgToFile )
 
 main = do
     template <- B.readFile "out.template.html"
-    let obj = File.l2
+    let obj = File.l3
     print obj
     injectSvgToFile "out1.html" template (prettyPrintWithMap obj)

@@ -5,6 +5,18 @@ const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
+const showProgress = () => {
+    let ret;
+    const promise = new Promise(resolve => {
+        ret = resolve;
+    });
+    vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: "Working on it! May take some time...",
+        cancellable: false
+    }, (progress, token) => promise);
+    return { end: ret };
+};
 const readFile = async (filePath) => {
     try {
         return fs.promises.readFile(filePath, 'utf8');
@@ -65,6 +77,7 @@ function activate(context) {
         }
         const editor = vscode.window.activeTextEditor;
         const document = editor.document;
+        const progress = showProgress();
         const filename = editor.document.fileName;
         let { name, dir } = path.parse(filename);
         if (dir[1] === ':')
@@ -86,7 +99,8 @@ function activate(context) {
         const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 12, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
         inset.webview.onDidReceiveMessage(async (message) => {
             console.log(message);
-            vscode.window.showErrorMessage(message.id);
+            const progress = showProgress();
+            // vscode.window.showErrorMessage(message.id);
             const { key, value, isRemove } = message;
             const exp = isRemove ? 'Nothing' : `Just ${value}`;
             console.log(isRemove, exp);
@@ -119,12 +133,14 @@ function activate(context) {
             });
             await document.save();
             inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
+            progress.end();
             return;
         }, undefined, context.subscriptions);
         inset.onDidDispose(() => {
             console.log('WEBVIEW disposed...:(');
         });
         inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
+        progress.end();
     }));
 }
 exports.activate = activate;

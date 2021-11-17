@@ -155,9 +155,8 @@
       els.forEach(el => {
         console.log(el.id);
         el.addEventListener('click', event => {
-          console.log(el.id);
-          console.log(el.id);
-          editInput.value = el.id;
+          const value = el.textContent.trim();
+          editInput.value = value;
           modal.style.display = 'block';
           const cb = event => {
             console.log(event);

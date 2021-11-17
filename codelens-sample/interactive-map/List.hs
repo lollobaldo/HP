@@ -29,6 +29,6 @@ prettyPrintListWithMap n (x:xs) = (D.hsep 2 [e, next]
     # D.connectOutside' (D.with & D.gaps .~ D.small & D.headLength .~ D.local 0.15) idd ide, (idd, ""):ids)
     where
         (next, ids) = prettyPrintListWithMap (n+1) xs
-        e = D.svgId (show n) $ D.svgClass idd (prettyPrint x # D.named idd)
+        e = D.svgTitle (show x) $ D.svgId (show n) $ D.svgClass idd (prettyPrint x # D.named idd)
         idd = "id" ++ show n
         ide = "id" ++ show (n + 1)

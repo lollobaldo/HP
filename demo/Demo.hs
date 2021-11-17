@@ -12,7 +12,7 @@ import qualified Data.Text as T
 l1, l2, l3 :: [Int]
 l1 = []
 l2 = [1..100]
-l3 = [1,3, 4, 6]
+l3 = [9,3,6]
 
 l4 = [1,3]
 
@@ -26,5 +26,5 @@ h = ['a', 'b']
 
 
 tree1 :: Tree Int
-tree1 = Node 1 [Node 2 (map lf [1..3]), Node 3 [Node 7 (map lf [10..13])]]
+tree1 = Node 1 [Node 2 (map lf [1..3]), Node 6 [Node 3 (map lf [50..53])]]
   where lf x = Node x []

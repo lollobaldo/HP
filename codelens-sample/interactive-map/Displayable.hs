@@ -46,6 +46,7 @@ class (Foldable t) => Editable t where
 
 prettyPrintWithMap :: (Traversable t, Displayable (t a)) => t a -> (D.Diagram D.SVG, Map)
 prettyPrintWithMap t = (prettyPrint t, map (\x -> ("id" ++ show x, "")) $ getKeys t)
+
 -- label = flip evalState 0 . mapM (\a -> get >>= \i -> modify (+1) >> return (a,i))
 
 -- editAtKey :: (Traversable t, Applicative t, Monoid (t a)) => t a -> Key -> Maybe a -> t a

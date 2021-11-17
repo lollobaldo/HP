@@ -3,6 +3,19 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cp from 'child_process';
 
+const showProgress = () => {
+  let ret;
+  const promise = new Promise<void>(resolve => {
+      ret = resolve;
+  });
+  vscode.window.withProgress({
+    location: vscode.ProgressLocation.Notification,
+    title: "Working on it! May take some time...",
+    cancellable: false
+  }, (progress, token) => promise);
+  return { end: ret };
+};
+
 const readFile = async (filePath: fs.PathLike): Promise<string> => {
   try {
     return fs.promises.readFile(filePath, 'utf8');
@@ -63,6 +76,8 @@ export function activate(context: vscode.ExtensionContext) {
       const editor = vscode.window.activeTextEditor;
       const document = editor.document;
       
+      const progress = showProgress();
+
       const filename = editor.document.fileName;
       let { name, dir } = path.parse(filename);
       if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
@@ -92,7 +107,8 @@ export function activate(context: vscode.ExtensionContext) {
       inset.webview.onDidReceiveMessage(
         async message => {
           console.log(message);
-          vscode.window.showErrorMessage(message.id);
+          const progress = showProgress();
+          // vscode.window.showErrorMessage(message.id);
           const { key, value, isRemove } = message;
           
           const exp = isRemove ? 'Nothing' : `Just ${value}`;
@@ -110,6 +126,7 @@ export function activate(context: vscode.ExtensionContext) {
           const cmd = `cabal run MainEdit --ghc-options=-i${dir}`.replace(/\\/g, "\/");
           console.log(cmd);
           let result = "";
+
           try {
             result = cp.execSync(cmd, { cwd }).toString();
           }
@@ -128,6 +145,7 @@ export function activate(context: vscode.ExtensionContext) {
           });
           await document.save();
           inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
+          progress.end()
           return;
         },
         undefined,
@@ -136,8 +154,8 @@ export function activate(context: vscode.ExtensionContext) {
       inset.onDidDispose(() => {
         console.log('WEBVIEW disposed...:(');
       });
-
       inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
+      progress.end()
     })
   );
 }
