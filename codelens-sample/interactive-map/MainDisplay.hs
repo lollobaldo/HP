@@ -1,4 +1,3 @@
-
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
@@ -16,6 +15,6 @@ import Utils ( injectSvgToFile )
 
 main = do
     template <- B.readFile "out.template.html"
-    let obj = File.l4
+    let obj = File.l3
     print obj
     injectSvgToFile "out1.html" template (prettyPrintWithMap obj)

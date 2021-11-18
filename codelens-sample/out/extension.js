@@ -4,7 +4,6 @@ exports.activate = void 0;
 const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
-const cp = require("child_process");
 const repljs_1 = require("./repljs");
 const showProgress = () => {
     let ret;
@@ -56,31 +55,45 @@ const invalidateCache = async (filePath) => {
     }
 };
 function activate(context) {
-    var interactive_ghci = new repljs_1.InteractiveProcessHandle('cabal repl', []);
-    const generateHtml = async (dir, cwd, forceRefreshPath = '') => {
-        if (forceRefreshPath) {
-            console.log(`invalidating ${forceRefreshPath}`);
-            await invalidateCache(forceRefreshPath);
+    let _ghciInstance;
+    let _activeCwd = '';
+    const getGhci = async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            throw "No active editor to use as cwd";
         }
-        const cmd = `cabal run MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
-        console.log(cmd);
-        try {
-            console.log(cp.execSync(cmd, { cwd }).toString());
+        const filename = editor.document.fileName;
+        let dir = path.parse(filename).dir;
+        // Fix for Windows uppercase requirement for drive letters
+        if (dir[1] === ':')
+            dir = dir.replace(dir[0], dir[0].toUpperCase());
+        const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
+        console.log(_ghciInstance, cwd, _activeCwd);
+        if (!_ghciInstance || cwd !== _activeCwd) {
+            const cmd = `cabal repl MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+            console.log(cmd, cwd);
+            _ghciInstance = new repljs_1.InteractiveProcessHandle(cmd, [], { cwd });
+            _activeCwd = cwd;
         }
-        catch (err) {
-            console.log(err);
-        }
+        return _ghciInstance;
+    };
+    const generateHtml = async (ghciInstancePromise) => {
+        const ghciInstance = await ghciInstancePromise;
+        await ghciInstance.call(':l MainDisplay');
+        await ghciInstance.call('main');
         const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
         return data;
     };
     context.subscriptions.push(vscode.commands.registerCommand('catCoding.waffle', async () => {
-        const out1 = await interactive_ghci.call(':l MainDisplay');
-        const out2 = await interactive_ghci.call('main');
-        console.log(out1, out2);
-    }, vscode.commands.registerCommand('catCoding.start', async () => {
+        const ghciInstance = await getGhci();
+        const d = await ghciInstance.call(':r');
+        console.log(d);
+        return;
+    }), vscode.commands.registerCommand('catCoding.start', async () => {
         if (!vscode.window.activeTextEditor) {
             return;
         }
+        const ghciInstancePromise = getGhci();
         const editor = vscode.window.activeTextEditor;
         const document = editor.document;
         const progress = showProgress();
@@ -89,9 +102,9 @@ function activate(context) {
         if (dir[1] === ':')
             dir = dir.replace(dir[0], dir[0].toUpperCase());
         const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
-        const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
-        const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
-        await replaceInFile(tempSettingPath, injeSettingPath, [["###REPLACE WITH DIRECTORY OF PROJECT###", dir]]);
+        // const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
+        // const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
+        // await replaceInFile(tempSettingPath, injeSettingPath, [["###REPLACE WITH DIRECTORY OF PROJECT###", dir]]);
         const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs.template');
         const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs');
         const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
@@ -118,36 +131,28 @@ function activate(context) {
                 ["###REPLACE WITH KEY###", key],
                 ["###REPLACE WITH VALUE###", exp]
             ]);
-            const cmd = `cabal run MainEdit --ghc-options=-i${dir}`.replace(/\\/g, "\/");
-            console.log(cmd);
-            let result = "";
-            try {
-                result = cp.execSync(cmd, { cwd }).toString();
-            }
-            catch (err) {
-                console.log(err);
-                return;
-            }
+            const ghciInstance = await ghciInstancePromise;
+            await ghciInstance.call(':l MainEdit');
+            const result = await ghciInstance.call('main');
+            console.log("RESULT:");
             console.log(result);
-            const mid = result.split('\n');
-            const newValue = mid[mid.length - 2];
             var startposition = new vscode.Position(line, 0);
             var endingposition = new vscode.Position(line + 1, 0);
             var range = new vscode.Range(startposition, endingposition);
             editor.edit(editBuilder => {
-                editBuilder.replace(range, `${highlight} = ${newValue}\n`);
+                editBuilder.replace(range, `${highlight} = ${result}\n`);
             });
             await document.save();
-            inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
+            inset.webview.html = await generateHtml(ghciInstancePromise);
             progress.end();
             return;
         }, undefined, context.subscriptions);
         inset.onDidDispose(() => {
             console.log('WEBVIEW disposed...:(');
         });
-        inset.webview.html = await generateHtml(dir, cwd, injeDispPath);
+        inset.webview.html = await generateHtml(ghciInstancePromise);
         progress.end();
-    })));
+    }));
 }
 exports.activate = activate;
 //# sourceMappingURL=extension.js.map

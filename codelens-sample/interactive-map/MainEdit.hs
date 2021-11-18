@@ -15,5 +15,5 @@ import Utils ( injectSvgToFile )
 
 main = do
     let key = 1
-    let val = Nothing
-    print $ editAtKey (annotate File.tree1) key val
+    let val = Just 25
+    print $ editAtKey (annotate File.l3) key val
