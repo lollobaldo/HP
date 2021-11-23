@@ -62,6 +62,12 @@ class Displayable t where
 -- instance {-# OVERLAPPABLE  #-} (Traversable t) => Displayable (t a) where
 --   prettyPrintWithMap t = (prettyPrint t, map (\x -> (show x, "")) $ getKeys t)
 
+instance {-# OVERLAPPING  #-} Displayable Char where
+  prettyPrint t = D.text t' <> D.rect (0.8 * l) 1.2
+    where
+      t' = show t
+      l = debug $ fromIntegral $ length t'
+
 instance {-# OVERLAPPING  #-} Displayable String where
   prettyPrint t = D.text t' <> D.rect (0.8 * l) 1.2
     where

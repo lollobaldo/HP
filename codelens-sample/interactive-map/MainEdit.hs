@@ -4,8 +4,9 @@ module Main where
 
 import qualified Data.ByteString.Char8 as B
 
-import qualified Demo as File
+import qualified Custom as File
 import Displayable
+import Graph
 import List
 import Tree
 import Utils ( injectSvgToFile )
@@ -14,6 +15,6 @@ import Utils ( injectSvgToFile )
 -- import qualified Data.Text as T
 
 main = do
-    let key = 1
-    let val = Just 25
-    print $ editAtKey (annotate File.l3) key val
+    let key = 0
+    let val = Just 'k'
+    print $ editAtKey (annotate File.g1) key val

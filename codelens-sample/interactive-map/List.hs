@@ -13,7 +13,7 @@ import qualified Diagrams.Backend.SVG         as D
 import Displayable
 import Utils
 
-instance {-# OVERLAPPABLE #-} (Displayable a, Show a) => Displayable [a] where
+instance {-# OVERLAPPING #-} (Displayable a, Show a) => Displayable [a] where
   prettyPrint = fst . prettyPrintListWithMap 0
 
 instance Editable [] where

@@ -6,6 +6,7 @@ import qualified Data.ByteString.Char8 as B
 
 import qualified ###REPLACE WITH NAME OF MODULE### as File
 import Displayable
+import Graph
 import List
 import Tree
 import Utils ( injectSvgToFile )
@@ -14,7 +15,6 @@ import Utils ( injectSvgToFile )
 -- import qualified Data.Text as T
 
 main = do
-    template <- B.readFile "out.template.html"
-    let obj = File.###REPLACE WITH IDENTIFIER OF EXPRESSION###
-    print obj
-    injectSvgToFile "out1.html" template (prettyPrintWithMap obj)
+    let key = ###REPLACE WITH KEY###
+    let val = ###REPLACE WITH VALUE###
+    print $ editAtKey (annotate File.###REPLACE WITH IDENTIFIER OF EXPRESSION###) key val

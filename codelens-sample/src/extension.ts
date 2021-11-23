@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as cp from 'child_process';
 
 import { InteractiveProcessHandle } from './repljs';
-import { Console } from 'console';
 
 const showProgress = () => {
   let ret: (value: void | PromiseLike<void>) => void;
@@ -83,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
     const ghciInstance = await ghciInstancePromise;
     await ghciInstance.call(':l MainDisplay');
     await ghciInstance.call('main');
-    const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
+    const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out', 'out1.html'));
     return data;
   };
 
@@ -110,11 +109,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
 
-      // const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
-      // const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
-      // await replaceInFile(tempSettingPath, injeSettingPath, [["###REPLACE WITH DIRECTORY OF PROJECT###", dir]]);
-
-      const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs.template');
+      const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'MainDisplay.hs.template');
       const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs');
       
       const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
@@ -140,7 +135,7 @@ export function activate(context: vscode.ExtensionContext) {
           const exp = isRemove ? 'Nothing' : `Just ${value}`;
           console.log(isRemove, exp);
 
-          const tempEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs.template');
+          const tempEditPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'MainEdit.hs.template');
           const injeEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
 
           await replaceInFile(tempEditPath, injeEditPath, [

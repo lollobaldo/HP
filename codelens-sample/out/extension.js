@@ -81,7 +81,7 @@ function activate(context) {
         const ghciInstance = await ghciInstancePromise;
         await ghciInstance.call(':l MainDisplay');
         await ghciInstance.call('main');
-        const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out1.html'));
+        const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out', 'out1.html'));
         return data;
     };
     context.subscriptions.push(vscode.commands.registerCommand('catCoding.waffle', async () => {
@@ -102,10 +102,7 @@ function activate(context) {
         if (dir[1] === ':')
             dir = dir.replace(dir[0], dir[0].toUpperCase());
         const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
-        // const tempSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci.template');
-        // const injeSettingPath = path.join(context.extensionPath, 'interactive-map', '.ghci');
-        // await replaceInFile(tempSettingPath, injeSettingPath, [["###REPLACE WITH DIRECTORY OF PROJECT###", dir]]);
-        const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs.template');
+        const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'MainDisplay.hs.template');
         const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs');
         const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
         const highlight = editor.document.getText(wordRange);
@@ -123,7 +120,7 @@ function activate(context) {
             const { key, value, isRemove } = message;
             const exp = isRemove ? 'Nothing' : `Just ${value}`;
             console.log(isRemove, exp);
-            const tempEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs.template');
+            const tempEditPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'MainEdit.hs.template');
             const injeEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
             await replaceInFile(tempEditPath, injeEditPath, [
                 ["###REPLACE WITH NAME OF MODULE###", name],

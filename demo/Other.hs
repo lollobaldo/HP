@@ -11,9 +11,9 @@ import qualified Data.Text as T
 
 l1, l2, l3 :: [Int]
 l1 = []
-l2 = [1,2,4]
+l2 = [1,25,4]
 l3 = [1..10]
 
 tree1 :: Tree Int
-tree1 = Node 1 [Node 2 (map lf [1..3]), Node 6 [Node 3 (map lf [50..53])]]
+tree1 = Node {rootLabel = 1, subForest = [Node {rootLabel = 2, subForest = []},Node {rootLabel = 6, subForest = [Node {rootLabel= 3, subForest = []}]}]}
   where lf x = Node x []
