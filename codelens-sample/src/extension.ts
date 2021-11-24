@@ -78,10 +78,10 @@ export function activate(context: vscode.ExtensionContext) {
     return _ghciInstance;
   };
 
-  const generateHtml = async (ghciInstancePromise: Promise<InteractiveProcessHandle>) => {
+  const generateHtml = async (ghciInstancePromise: Promise<InteractiveProcessHandle>, identifier: string) => {
     const ghciInstance = await ghciInstancePromise;
-    await ghciInstance.call(':l MainDisplay');
-    await ghciInstance.call('main');
+    await ghciInstance.call(':l Main');
+    await ghciInstance.call(`graph File.${identifier}`);
     const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out', 'out1.html'));
     return data;
   };
@@ -101,23 +101,24 @@ export function activate(context: vscode.ExtensionContext) {
       const editor = vscode.window.activeTextEditor;
       const document = editor.document;
       
-      const progress = showProgress();
+      const progressNotification = showProgress();
 
       const filename = editor.document.fileName;
       let { name, dir } = path.parse(filename);
       if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
 
-      const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
+      // const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
 
-      const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'MainDisplay.hs.template');
-      const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'MainDisplay.hs');
+      const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'Main.template.hs');
+      const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs');
       
       const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
       const highlight = editor.document.getText(wordRange);
       await replaceInFile(tempDispPath, injeDispPath, [
         ["###REPLACE WITH NAME OF MODULE###", name],
-        ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
+        // ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
       ]);
+
       console.log(highlight);
 
       const line = editor.selection.active.line;
@@ -135,18 +136,18 @@ export function activate(context: vscode.ExtensionContext) {
           const exp = isRemove ? 'Nothing' : `Just ${value}`;
           console.log(isRemove, exp);
 
-          const tempEditPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'MainEdit.hs.template');
-          const injeEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
+          // const tempEditPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'MainEdit.hs.template');
+          // const injeEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
 
-          await replaceInFile(tempEditPath, injeEditPath, [
-            ["###REPLACE WITH NAME OF MODULE###", name],
-            ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight],
-            ["###REPLACE WITH KEY###", key],
-            ["###REPLACE WITH VALUE###", exp]
-          ]);
+          // await replaceInFile(tempEditPath, injeEditPath, [
+          //   ["###REPLACE WITH NAME OF MODULE###", name],
+          //   ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight],
+          //   ["###REPLACE WITH KEY###", key],
+          //   ["###REPLACE WITH VALUE###", exp]
+          // ]);
           const ghciInstance = await ghciInstancePromise;
-          await ghciInstance.call(':l MainEdit');
-          const result = await ghciInstance.call('main');
+          await ghciInstance.call(':l Main');
+          const result = await ghciInstance.call(`edit File.${highlight} ${key} ${exp}`);
           console.log("RESULT:");
           console.log(result);
           var startposition = new vscode.Position(line,0);
