@@ -34,21 +34,21 @@ edges (Graph ns) = concatMap (\(Node a e) -> map (a,) e) ns
 
 
 g1 :: Graph Char
-g1 = Graph [Node 'a' ['b'..'d'], Node 'b' ['d'], Node 'c' ['a'..'b'], Node 'd' [], Node 'e' []]
+g1 = Graph [Node 'a' ['b'..'d'], Node 'b' ['d'], Node 'c' ['a'..'b'], Node 'd' [], Node 'e' [], Node 'z' ['a'..'e']]
 
 instance {-# OVERLAPPING #-} (Displayable a, Show a, D.IsName a) => Displayable (Graph a) where
   prettyPrint = prettyPrintGraph
 
-instance Editable Graph where
-  editAtKey = editGraphAtKey
+-- instance Editable Graph where
+--   editAtKey = editGraphAtKey
 
-editGraphAtKey :: Graph (Key, a) -> Key -> Maybe a -> Graph a
-editGraphAtKey graph k mv = graph
-editGraphAtKey (Graph ns) k mv = go ns
-  where
-    go (Graph ns)
-      | i == k    = if isNothing mv then Node x [] else Node (fromJust mv) (map (fmap snd) sub)
-      | otherwise = Node x (map go sub)
+-- editGraphAtKey :: Graph (Key, a) -> Key -> Maybe a -> Graph a
+-- editGraphAtKey graph k mv = graph
+-- editGraphAtKey (Graph ns) k mv = go ns
+--   where
+--     go (Graph ns)
+--       | i == k    = if isNothing mv then Node x [] else Node (fromJust mv) (map (fmap snd) sub)
+--       | otherwise = Node x (map go sub)
 
 prettyPrintGraph :: (Displayable a, Show a, D.IsName a) => Graph a ->  D.Diagram D.SVG
 prettyPrintGraph g' = D.applyAll arrowsFactory layout

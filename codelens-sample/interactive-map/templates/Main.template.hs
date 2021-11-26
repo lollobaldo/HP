@@ -1,8 +1,8 @@
-{-# LANGUAGE IncoherentInstances #-}
-
 module Main where
 
 import qualified ###REPLACE WITH NAME OF MODULE### as File
+
+import qualified Data.ByteString.Char8 as B
 
 import Displayable
 import List

@@ -1,10 +1,9 @@
-{-# LANGUAGE IncoherentInstances #-}
-
 module Main where
+
+import qualified Demo as File
 
 import qualified Data.ByteString.Char8 as B
 
-import qualified Demo as File
 import Displayable
 import List
 import Tree

@@ -12,7 +12,7 @@ import qualified Data.Text as T
 l1, l2, l3 :: [Int]
 l1 = []
 l2 = [1..10]
-l3 = [9,82,9]
+l3 = [1,3]
 
 l4 = l2 ++ l3
 

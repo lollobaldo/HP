@@ -147,7 +147,7 @@ export function activate(context: vscode.ExtensionContext) {
           // ]);
           const ghciInstance = await ghciInstancePromise;
           await ghciInstance.call(':l Main');
-          const result = await ghciInstance.call(`edit File.${highlight} ${key} ${exp}`);
+          const result = await ghciInstance.call(`edit (File.${highlight}) (${key}) (${exp})`);
           console.log("RESULT:");
           console.log(result);
           var startposition = new vscode.Position(line,0);
@@ -157,7 +157,7 @@ export function activate(context: vscode.ExtensionContext) {
             editBuilder.replace(range, `${highlight} = ${result}\n`);
           });
           await document.save();
-          inset.webview.html = await generateHtml(ghciInstancePromise);
+          inset.webview.html = await generateHtml(ghciInstancePromise, highlight);
           progress.end()
           return;
         },
@@ -167,8 +167,8 @@ export function activate(context: vscode.ExtensionContext) {
       inset.onDidDispose(() => {
         console.log('WEBVIEW disposed...:(');
       });
-      inset.webview.html = await generateHtml(ghciInstancePromise);
-      progress.end()
+      inset.webview.html = await generateHtml(ghciInstancePromise, highlight);
+      progressNotification.end()
     })
   );
 }
