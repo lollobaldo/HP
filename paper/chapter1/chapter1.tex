@@ -1,0 +1,56 @@
+
+\chapter{Introduction}
+
+The preliminary material of your report should contain:
+\begin{itemize}
+\item
+The title page.
+\item
+An abstract page.
+\item
+Optionally an acknowledgements page.
+\item
+The table of contents.
+\end{itemize}
+
+As in this example \texttt{skeleton.tex}, the above material should be
+included between:
+\begin{verbatim}
+\begin{preliminary}
+    ...
+\end{preliminary}
+\end{verbatim}
+This style file uses roman numeral page numbers for the preliminary material.
+
+The main content of the dissertation, starting with the first chapter,
+starts with page~1. \emph{\textbf{The main content must not go beyond page~40.}}
+
+The report then contains a bibliography and any appendices, which may go beyond
+page~40. The appendices are only for any supporting material that's important to
+go on record. However, you cannot assume markers of dissertations will read them.
+
+You may not change the dissertation format (e.g., reduce the font size, change
+the margins, or reduce the line spacing from the default 1.5 spacing). Be
+careful if you copy-paste packages into your document preamble from elsewhere.
+Some \LaTeX{} packages such as \texttt{geometry}, \texttt{fullpage}, or
+\texttt{savetrees} change the margins of your document. Do not include them!
+
+Over length or incorrectly-formatted dissertations will not be accepted and you
+would have to modify your dissertation and resubmit. You cannot assume we will
+check your submission before the final deadline and if it requires resubmission
+after the deadline to conform to the page and style requirements you will be
+subject to the usual late penalties based on your final submission time.
+
+\section{Using Sections}
+
+Divide your chapters into sub-parts as appropriate.
+
+\section{Citations}
+
+Citations (such as \cite{Example} or \parencite{Example2}  ) can be generated using
+\texttt{BibTeX}. For more advanced usage, the \texttt{natbib} package is
+recommended. You could also consider the newer \texttt{biblatex} system.
+
+These examples use a numerical citation style. You may also use
+(Author, Date) format if you prefer.
+
