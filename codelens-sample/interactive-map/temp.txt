@@ -1,0 +1,42 @@
+[
+  SigD f (
+    AppT (
+      AppT ArrowT (
+        AppT ListT (
+          VarT a)
+        )
+      )
+     (
+      AppT ListT (
+        VarT a)
+      )
+    )
+  ,FunD f [
+    Clause [
+      ListP [
+        ]
+      ]
+     (
+      NormalB (
+        ListE [
+          ]
+        )
+      )
+     [
+      ]
+    ,Clause [
+      ParensP (
+        UInfixP (
+          VarP x)
+         GHC.Types.: (
+          VarP xs)
+        )
+      ]
+     (
+      NormalB (
+        VarE xs)
+      )
+     [
+      ]
+    ]
+  ]

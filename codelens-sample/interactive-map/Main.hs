@@ -1,6 +1,6 @@
 module Main where
 
-import qualified Demo as File
+import qualified Custom as File
 
 import qualified Data.ByteString.Char8 as B
 

@@ -101,7 +101,6 @@ function activate(context) {
         let { name, dir } = path.parse(filename);
         if (dir[1] === ':')
             dir = dir.replace(dir[0], dir[0].toUpperCase());
-        // const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
         const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'Main.template.hs');
         const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs');
         const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
@@ -120,14 +119,6 @@ function activate(context) {
             const { key, value, isRemove } = message;
             const exp = isRemove ? 'Nothing' : `Just ${value}`;
             console.log(isRemove, exp);
-            // const tempEditPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'MainEdit.hs.template');
-            // const injeEditPath = path.join(context.extensionPath, 'interactive-map', 'MainEdit.hs');
-            // await replaceInFile(tempEditPath, injeEditPath, [
-            //   ["###REPLACE WITH NAME OF MODULE###", name],
-            //   ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight],
-            //   ["###REPLACE WITH KEY###", key],
-            //   ["###REPLACE WITH VALUE###", exp]
-            // ]);
             const ghciInstance = await ghciInstancePromise;
             await ghciInstance.call(':l Main');
             const result = await ghciInstance.call(`edit (File.${highlight}) (${key}) (${exp})`);
