@@ -11,4 +11,3 @@ crudList (Op Create key a) ls = concatMap (\(k, e) -> if k == key then [e,a] els
 crudList (Op Update key a) ls = map (\(k, e) -> if k == key then a else e) ls
 crudList (Op Delete key _) ls = concatMap (\(k, e) -> if k == key then [] else [e]) ls
 
-

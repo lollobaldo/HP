@@ -32,7 +32,7 @@ generateCallbacks ids = ""
     <> "    const ids = " <> C.pack (show ids) <> ";\n"
     <> "</script>"
 
-printSvgToByte path svg =
+printSvgToByte svg =
     let options = D.SVGOptions (D.dims2D 800 200) Nothing (T.pack "") [] True
         svgDoc = D.renderDia D.SVG options (D.sized (D.dims2D 800 200) svg)
     in
@@ -49,10 +49,18 @@ printSvgToByte path svg =
 --     in
 --         B.writeFile path html
 
-injectSvgToFile path template (svg, mp) =
-    let bs = printSvgToByte path svg
+-- injectSvgToFile path template (svg, mp) =
+--     let bs = printSvgToByte path svg
+--         inject = generateHTML (map fst mp) bs
+--         pieces = B.breakSubstring "<!-- ### ADD HTML AFTER HERE ### -->" template
+--         html = fst pieces <> inject <> snd pieces
+--     in
+--         B.writeFile path html
+
+generateHtml :: B.ByteString -> (D.Diagram D.SVG, [(String, b)]) -> B.ByteString
+generateHtml template (svg, mp) =
+    let bs = printSvgToByte svg
         inject = generateHTML (map fst mp) bs
         pieces = B.breakSubstring "<!-- ### ADD HTML AFTER HERE ### -->" template
-        html = fst pieces <> inject <> snd pieces
     in
-        B.writeFile path html
+        fst pieces <> inject <> snd pieces

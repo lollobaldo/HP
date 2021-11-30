@@ -1,42 +1,20 @@
 [
-  SigD f (
-    AppT (
-      AppT ArrowT (
-        AppT ListT (
-          VarT a)
-        )
-      )
-     (
-      AppT ListT (
-        VarT a)
-      )
-    )
-  ,FunD f [
-    Clause [
-      ListP [
+  (
+    SrcSpanInfo {
+      srcInfoSpan = SrcSpan "play.hs" 9 1 9 3, srcInfoPoints = [
         ]
-      ]
-     (
-      NormalB (
-        ListE [
-          ]
-        )
-      )
-     [
-      ]
-    ,Clause [
-      ParensP (
-        UInfixP (
-          VarP x)
-         GHC.Types.: (
-          VarP xs)
-        )
-      ]
-     (
-      NormalB (
-        VarE xs)
-      )
-     [
-      ]
-    ]
+      }
+    ,"l1")
+  ,(
+    SrcSpanInfo {
+      srcInfoSpan = SrcSpan "play.hs" 10 1 10 3, srcInfoPoints = [
+        ]
+      }
+    ,"l2")
+  ,(
+    SrcSpanInfo {
+      srcInfoSpan = SrcSpan "play.hs" 17 1 17 5, srcInfoPoints = [
+        ]
+      }
+    ,"main")
   ]

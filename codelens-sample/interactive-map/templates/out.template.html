@@ -97,17 +97,23 @@
     }
 
     /* The Modal Close Button (x) */
-    .close {
+    .close, .refresh {
       position: absolute;
       right: 35px;
       top: 15px;
       font-size: 40px;
       font-weight: bold;
-      color: #f1f1f1;
+      color: #222;
+    }
+
+    .refresh {
+      right: 70px;
     }
 
     .close:hover,
-    .close:focus {
+    .close:focus,
+    .refresh:hover,
+    .refresh:focus {
       /* color: #f44336; */
       cursor: pointer;
     }
@@ -132,8 +138,8 @@
 
 <body>
   <div id="modal" class="modal">
-    <span onclick="document.getElementById('modal').style.display='none'" class="close"
-      title="Close Modal">&times;</span>
+    <span class="refresh" title="Refresh Modal" id="refreshButton">↻</span>
+    <span class="close" title="Close Modal" id="closeButton">×</span>
     <form class="modal-content" action="/action_page.php">
       <div class="container">
         <h1>Update the value of</h1>
@@ -151,6 +157,12 @@
     console.log(ids);
     const vscode = acquireVsCodeApi();
     const modal = document.getElementById('modal');
+    const refreshButton = document.getElementById('refreshButton');
+    const closeButton = document.getElementById('closeButton');
+
+    refreshButton.addEventListener('click', event => vscode.postMessage({ refresh: true }));
+    closeButton.addEventListener('click', event => modal.style.display = 'none');
+
     const editInput = document.getElementById('editInput');
     const removeButton = document.getElementById('removeButton');
     const submitButton = document.getElementById('updateButton');

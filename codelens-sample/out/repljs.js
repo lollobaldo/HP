@@ -13,14 +13,12 @@ class InteractiveProcessHandle {
     }
     processToPromise(process) {
         return new Promise((resolve, reject) => {
-            //   console.log("+++ creating promise");
             process.stdout.removeAllListeners();
             process.stderr.removeAllListeners();
             process.stdin.removeAllListeners();
             let lastString = '';
             process.stdout.on("data", (data) => {
                 data = data.toString().trim();
-                this.update(data);
                 lastString += data;
                 if (lastString.endsWith(this.replPrompt)) {
                     console.log('done', lastString);
@@ -29,12 +27,7 @@ class InteractiveProcessHandle {
             });
             process.stderr.on("data", (data) => {
                 data = data.toString().trim();
-                this.update(data);
-                lastString += data;
-                if (lastString.endsWith(this.replPrompt)) {
-                    console.log('done', lastString);
-                    resolve(lastString.replace(this.replPrompt, ''));
-                }
+                console.warn(data);
             });
             process.stdin.on("error", () => {
                 console.log("Failure in stdin! ... error");
@@ -76,13 +69,7 @@ class InteractiveProcessHandle {
                 console.log("Failure in stderr! ... end");
                 reject();
             });
-            //   console.log("+++ done creating promise");
         });
-    }
-    update(data) {
-        this.latestOutput = data;
-        this.outputLog += data + "\n";
-        // console.log(`logging from update: "${data}"`);
     }
     call(command) {
         console.log(`called: "${command.trim()}"`);
@@ -93,11 +80,4 @@ class InteractiveProcessHandle {
 }
 exports.InteractiveProcessHandle = InteractiveProcessHandle;
 ;
-// var interactive_python = new InteractiveProcessHandle('python', ['-i']);
-// async () => {
-//   await interactive_python.call('');
-//   await interactive_python.call('x = 20');
-//   let x = await clang_build.call('print(x)\n');
-//   console.log('x = ', x);
-// }
 //# sourceMappingURL=repljs.js.map

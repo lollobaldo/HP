@@ -97,17 +97,23 @@
     }
 
     /* The Modal Close Button (x) */
-    .close {
+    .close, .refresh {
       position: absolute;
       right: 35px;
       top: 15px;
       font-size: 40px;
       font-weight: bold;
-      color: #f1f1f1;
+      color: #222;
+    }
+
+    .refresh {
+      right: 70px;
     }
 
     .close:hover,
-    .close:focus {
+    .close:focus,
+    .refresh:hover,
+    .refresh:focus {
       /* color: #f44336; */
       cursor: pointer;
     }
@@ -132,8 +138,8 @@
 
 <body>
   <div id="modal" class="modal">
-    <span onclick="document.getElementById('modal').style.display='none'" class="close"
-      title="Close Modal">&times;</span>
+    <span class="refresh" title="Refresh Modal" id="refreshButton">↻</span>
+    <span class="close" title="Close Modal" id="closeButton">×</span>
     <form class="modal-content" action="/action_page.php">
       <div class="container">
         <h1>Update the value of</h1>
@@ -147,14 +153,20 @@
   </div>
   <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="800.0000" stroke-opacity="1" stroke="rgb(0,0,0)" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0.0 0.0 800.0 200.0" font-size="1" height="200.0000" version="1.1"><defs></defs><g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id0" stroke-linecap="butt" stroke-width="1.1313708498984762" stroke-miterlimit="10.0" fill-opacity="0.0" id="0"><path d="M 600.0000,200.0000 l -0.0000,-200.0000 h -400.0000 l -0.0000,200.0000 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id0" stroke-linecap="butt" stroke-width="1.1313708498984762" font-size="166.66666666666666px" stroke-miterlimit="10.0" fill-opacity="1.0" id="0"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,400.0000,100.0000)" text-anchor="middle">&quot;1&quot;</text></g><title>&quot;1&quot;</title></g></svg><script>
-    const ids = ["id0"];
+    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="800.0000" stroke-opacity="1" stroke="rgb(0,0,0)" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0.0 0.0 800.0 200.0" font-size="1" height="200.0000" version="1.1"><defs></defs><g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id2" stroke-linecap="butt" stroke-width="1.3063945294843615" stroke-miterlimit="10.0" fill-opacity="0.0" id="2"><path d="M 800.0000,166.6667 l -0.0000,-133.3333 h -88.8889 l -0.0000,133.3333 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id2" stroke-linecap="butt" stroke-width="1.3063945294843615" font-size="111.1111111111111px" stroke-miterlimit="10.0" fill-opacity="1.0" id="2"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,755.5556,100.0000)" text-anchor="middle">4</text></g><title>4</title></g><g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id1" stroke-linecap="butt" stroke-width="1.3063945294843615" stroke-miterlimit="10.0" fill-opacity="0.0" id="1"><path d="M 488.8889,166.6667 l -0.0000,-133.3333 h -177.7778 l -0.0000,133.3333 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id1" stroke-linecap="butt" stroke-width="1.3063945294843615" font-size="111.1111111111111px" stroke-miterlimit="10.0" fill-opacity="1.0" id="1"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,400.0000,100.0000)" text-anchor="middle">25</text></g><title>25</title></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.3063945294843615" stroke-miterlimit="10.0" fill-opacity="0.0"><path d="M 496.4007,100.0000 h 190.5320 "/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 703.5993,100.0000 l -19.6860,-6.3964 l 3.3628,6.3964 l -3.3628,6.3964 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 687.2761,100.0000 h -0.3434 v -0.6532 l 0.3434,0.6532 h -0.3434 v 0.6532 Z"/></g><g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id0" stroke-linecap="butt" stroke-width="1.3063945294843615" stroke-miterlimit="10.0" fill-opacity="0.0" id="0"><path d="M 88.8889,166.6667 l -0.0000,-133.3333 h -88.8889 l -0.0000,133.3333 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" class="id0" stroke-linecap="butt" stroke-width="1.3063945294843615" font-size="111.1111111111111px" stroke-miterlimit="10.0" fill-opacity="1.0" id="0"><text dominant-baseline="middle" stroke="none" transform="matrix(1.0000,0.0000,0.0000,1.0000,44.4444,100.0000)" text-anchor="middle">1</text></g><title>1</title></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="1.3063945294843615" stroke-miterlimit="10.0" fill-opacity="0.0"><path d="M 96.4007,100.0000 h 190.5320 "/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 303.5993,100.0000 l -19.6860,-6.3964 l 3.3628,6.3964 l -3.3628,6.3964 Z"/></g><g stroke-opacity="1.0" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="butt" stroke-width="0.0" stroke-miterlimit="10.0" fill-opacity="1.0"><path d="M 287.2761,100.0000 h -0.3434 v -0.6532 l 0.3434,0.6532 h -0.3434 v 0.6532 Z"/></g></svg><script>
+    const ids = ["id0","id1","id2"];
 </script><!-- ### ADD HTML AFTER HERE ### -->
   <!-- <script>const ids = [1,2,3]</script> -->
   <script>
     console.log(ids);
     const vscode = acquireVsCodeApi();
     const modal = document.getElementById('modal');
+    const refreshButton = document.getElementById('refreshButton');
+    const closeButton = document.getElementById('closeButton');
+
+    refreshButton.addEventListener('click', event => vscode.postMessage({ refresh: true }));
+    closeButton.addEventListener('click', event => modal.style.display = 'none');
+
     const editInput = document.getElementById('editInput');
     const removeButton = document.getElementById('removeButton');
     const submitButton = document.getElementById('updateButton');

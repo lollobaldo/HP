@@ -10,7 +10,6 @@ export class InteractiveProcessHandle {
 
   private processToPromise(process: any) {
     return new Promise<string>((resolve, reject) => {
-    //   console.log("+++ creating promise");
       process.stdout.removeAllListeners();
       process.stderr.removeAllListeners();
       process.stdin.removeAllListeners();
@@ -19,7 +18,6 @@ export class InteractiveProcessHandle {
 
       process.stdout.on("data", (data: any) => {
         data = data.toString().trim();
-        this.update(data);
         lastString += data;
         if (lastString.endsWith(this.replPrompt)) {
           console.log('done', lastString);
@@ -28,12 +26,7 @@ export class InteractiveProcessHandle {
       });
       process.stderr.on("data", (data: any) => {
         data = data.toString().trim();
-        this.update(data);
-        lastString += data;
-        if (lastString.endsWith(this.replPrompt)) {
-          console.log('done', lastString);
-          resolve(lastString.replace(this.replPrompt,''));
-        }
+        console.warn(data);
       });
       process.stdin.on("error", () => {
         console.log("Failure in stdin! ... error");
@@ -75,14 +68,7 @@ export class InteractiveProcessHandle {
         console.log("Failure in stderr! ... end");
         reject();
       });
-    //   console.log("+++ done creating promise");
     });
-  }
-
-  private update(data: any) {
-    this.latestOutput = data;
-    this.outputLog += data + "\n";
-    // console.log(`logging from update: "${data}"`);
   }
 
   public call(command: string): Promise<string> {
@@ -101,12 +87,3 @@ export class InteractiveProcessHandle {
     this.process.stderr.setEncoding('utf8');
   }
 };
-
-// var interactive_python = new InteractiveProcessHandle('python', ['-i']);
-
-// async () => {
-//   await interactive_python.call('');
-//   await interactive_python.call('x = 20');
-//   let x = await clang_build.call('print(x)\n');
-//   console.log('x = ', x);
-// }

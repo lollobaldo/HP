@@ -40,18 +40,6 @@ const replaceInFile = async (templatePath: fs.PathLike, filePath: fs.PathLike, r
   }
 };
 
-const invalidateCache = async (filePath: fs.PathLike) => {
-  let data = await readFile(filePath);
-  console.log(data[0]);
-  if (data[0] === '\n') data = data.substring(1); else data = '\n' + data;
-  console.log(data[0])
-  try {
-    return fs.promises.writeFile(filePath, data, 'utf8');
-  } catch (err) {
-    console.error('Error occured while writing back file!', err);
-  }
-};
-
 export function activate(context: vscode.ExtensionContext) {
   let _ghciInstance: InteractiveProcessHandle;
   let _activeCwd = '';
@@ -73,6 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
       const cmd = `cabal repl Main --ghc-options=-i${dir}`.replace(/\\/g, "\/");
       console.log(cmd, cwd);
       _ghciInstance = new InteractiveProcessHandle(cmd, [], { cwd });
+      await _ghciInstance.call('');
       _activeCwd = cwd;
     }
     return _ghciInstance;
@@ -80,10 +69,16 @@ export function activate(context: vscode.ExtensionContext) {
 
   const generateHtml = async (ghciInstancePromise: Promise<InteractiveProcessHandle>, identifier: string) => {
     const ghciInstance = await ghciInstancePromise;
-    await ghciInstance.call(':l Main');
-    await ghciInstance.call(`graph File.${identifier}`);
-    const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out', 'out1.html'));
-    return data;
+    const load = await ghciInstance.call(':l Main');
+    console.log("load:", load);
+    const dat = await ghciInstance.call(`graph File.${identifier}`);
+    console.log(dat, JSON.parse(dat));
+    try{
+      console.log(JSON.parse(dat));
+    }catch(e){
+      console.log(e)
+    };
+    return JSON.parse(dat);
   };
 
   context.subscriptions.push(
@@ -114,7 +109,6 @@ export function activate(context: vscode.ExtensionContext) {
       const highlight = editor.document.getText(wordRange);
       await replaceInFile(tempDispPath, injeDispPath, [
         ["###REPLACE WITH NAME OF MODULE###", name],
-        // ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
       ]);
 
       console.log(highlight);
@@ -127,8 +121,14 @@ export function activate(context: vscode.ExtensionContext) {
       inset.webview.onDidReceiveMessage(
         async message => {
           console.log(message);
-          const progress = showProgress();
-          // vscode.window.showErrorMessage(message.id);
+          const progressNotification = showProgress();
+          
+          if (!message.refresh) {
+            inset.webview.html = (await generateHtml(ghciInstancePromise, highlight)).html;
+            progressNotification.end();
+            return;
+          };
+
           const { key, value, isRemove } = message;
           
           const exp = isRemove ? 'Nothing' : `Just ${value}`;
@@ -136,18 +136,19 @@ export function activate(context: vscode.ExtensionContext) {
 
           const ghciInstance = await ghciInstancePromise;
           await ghciInstance.call(':l Main');
-          const result = await ghciInstance.call(`edit (File.${highlight}) (${key}) (${exp})`);
+          const result = JSON.parse(await ghciInstance.call(`edit (File.${highlight}) (${key}) (${exp})`));
           console.log("RESULT:");
           console.log(result);
           var startposition = new vscode.Position(line,0);
           var endingposition = new vscode.Position(line+1,0);
           var range = new vscode.Range(startposition,endingposition);
           editor.edit(editBuilder => {
-            editBuilder.replace(range, `${highlight} = ${result}\n`);
+            editBuilder.replace(range, `${highlight} = ${result.code}\n`);
           });
           await document.save();
-          inset.webview.html = await generateHtml(ghciInstancePromise, highlight);
-          progress.end()
+
+          inset.webview.html = (await generateHtml(ghciInstancePromise, highlight)).html;
+          progressNotification.end();
           return;
         },
         undefined,
@@ -156,8 +157,10 @@ export function activate(context: vscode.ExtensionContext) {
       inset.onDidDispose(() => {
         console.log('WEBVIEW disposed...:(');
       });
-      inset.webview.html = await generateHtml(ghciInstancePromise, highlight);
-      progressNotification.end()
+      const response = await generateHtml(ghciInstancePromise, highlight);
+      console.log(response.info);
+      inset.webview.html = response.html;
+      progressNotification.end();
     })
   );
 }

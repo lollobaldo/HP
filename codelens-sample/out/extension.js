@@ -39,21 +39,6 @@ const replaceInFile = async (templatePath, filePath, reps) => {
         console.error('Error occured while writing back file!', err);
     }
 };
-const invalidateCache = async (filePath) => {
-    let data = await readFile(filePath);
-    console.log(data[0]);
-    if (data[0] === '\n')
-        data = data.substring(1);
-    else
-        data = '\n' + data;
-    console.log(data[0]);
-    try {
-        return fs.promises.writeFile(filePath, data, 'utf8');
-    }
-    catch (err) {
-        console.error('Error occured while writing back file!', err);
-    }
-};
 function activate(context) {
     let _ghciInstance;
     let _activeCwd = '';
@@ -70,19 +55,28 @@ function activate(context) {
         const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
         console.log(_ghciInstance, cwd, _activeCwd);
         if (!_ghciInstance || cwd !== _activeCwd) {
-            const cmd = `cabal repl MainDisplay --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+            const cmd = `cabal repl Main --ghc-options=-i${dir}`.replace(/\\/g, "\/");
             console.log(cmd, cwd);
             _ghciInstance = new repljs_1.InteractiveProcessHandle(cmd, [], { cwd });
+            await _ghciInstance.call('');
             _activeCwd = cwd;
         }
         return _ghciInstance;
     };
     const generateHtml = async (ghciInstancePromise, identifier) => {
         const ghciInstance = await ghciInstancePromise;
-        await ghciInstance.call(':l Main');
-        await ghciInstance.call(`graph File.${identifier}`);
-        const data = await readFile(path.join(context.extensionPath, 'interactive-map', 'out', 'out1.html'));
-        return data;
+        const load = await ghciInstance.call(':l Main');
+        console.log("load:", load);
+        const dat = await ghciInstance.call(`graph File.${identifier}`);
+        console.log(dat, JSON.parse(dat));
+        try {
+            console.log(JSON.parse(dat));
+        }
+        catch (e) {
+            console.log(e);
+        }
+        ;
+        return JSON.parse(dat);
     };
     context.subscriptions.push(vscode.commands.registerCommand('catCoding.waffle', async () => {
         const ghciInstance = await getGhci();
@@ -107,38 +101,44 @@ function activate(context) {
         const highlight = editor.document.getText(wordRange);
         await replaceInFile(tempDispPath, injeDispPath, [
             ["###REPLACE WITH NAME OF MODULE###", name],
-            // ["###REPLACE WITH IDENTIFIER OF EXPRESSION###", highlight]
         ]);
         console.log(highlight);
         const line = editor.selection.active.line;
         const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 12, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
         inset.webview.onDidReceiveMessage(async (message) => {
             console.log(message);
-            const progress = showProgress();
-            // vscode.window.showErrorMessage(message.id);
+            const progressNotification = showProgress();
+            if (!message.refresh) {
+                inset.webview.html = (await generateHtml(ghciInstancePromise, highlight)).html;
+                progressNotification.end();
+                return;
+            }
+            ;
             const { key, value, isRemove } = message;
             const exp = isRemove ? 'Nothing' : `Just ${value}`;
             console.log(isRemove, exp);
             const ghciInstance = await ghciInstancePromise;
             await ghciInstance.call(':l Main');
-            const result = await ghciInstance.call(`edit (File.${highlight}) (${key}) (${exp})`);
+            const result = JSON.parse(await ghciInstance.call(`edit (File.${highlight}) (${key}) (${exp})`));
             console.log("RESULT:");
             console.log(result);
             var startposition = new vscode.Position(line, 0);
             var endingposition = new vscode.Position(line + 1, 0);
             var range = new vscode.Range(startposition, endingposition);
             editor.edit(editBuilder => {
-                editBuilder.replace(range, `${highlight} = ${result}\n`);
+                editBuilder.replace(range, `${highlight} = ${result.code}\n`);
             });
             await document.save();
-            inset.webview.html = await generateHtml(ghciInstancePromise, highlight);
-            progress.end();
+            inset.webview.html = (await generateHtml(ghciInstancePromise, highlight)).html;
+            progressNotification.end();
             return;
         }, undefined, context.subscriptions);
         inset.onDidDispose(() => {
             console.log('WEBVIEW disposed...:(');
         });
-        inset.webview.html = await generateHtml(ghciInstancePromise, highlight);
+        const response = await generateHtml(ghciInstancePromise, highlight);
+        console.log(response.info);
+        inset.webview.html = response.html;
         progressNotification.end();
     }));
 }
