@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Visual = void 0;
 const vscode = require("vscode");
+const utils_1 = require("./utils");
 class Visual {
-    constructor(context, ghciPromise, identifier, span) {
-        if (!vscode.window.activeTextEditor) {
+    constructor(context, ghciPromise, identifier, line) {
+        if (!vscode.window.activeTextEditor)
             throw "No editor is active.";
-        }
         this.ghciPromise = ghciPromise;
         this.identifier = identifier;
-        this.span = span;
-        const line = vscode.window.activeTextEditor.selection.active.line;
+        this.line = line;
         this.inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 12, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
         this.inset.webview.html = loadingPage;
         this.inset.webview.onDidReceiveMessage(async (message) => {
@@ -17,43 +17,63 @@ class Visual {
             if (!vscode.window.activeTextEditor) {
                 throw "No editor is active.";
             }
-            const progressNotification = showProgress();
+            const progressNotification = (0, utils_1.showProgress)();
             if (message.refresh) {
-                this.inset.webview.html = (await generateHtml(this.ghciPromise, identifier)).html;
+                await this.refreshHtml();
                 progressNotification.end();
                 return;
             }
             ;
-            const { key, value, isRemove } = message;
-            const exp = isRemove ? 'Nothing' : `Just ${value}`;
-            console.log(isRemove, exp);
-            const ghciInstance = await ghciPromise;
-            await ghciInstance.call(':l Main');
-            const result = JSON.parse(await ghciInstance.call(`edit (File.${identifier}) (${key}) (${exp})`));
-            console.log("RESULT:");
-            console.log(result);
-            var startposition = new vscode.Position(line, 0);
-            var endingposition = new vscode.Position(line + 1, 0);
-            var range = new vscode.Range(startposition, endingposition);
-            vscode.window.activeTextEditor.edit(editBuilder => {
-                editBuilder.replace(range, `${identifier} = ${result.code}\n`);
-            });
-            await vscode.window.activeTextEditor.document.save();
-            this.inset.webview.html = (await generateHtml(ghciInstance, identifier)).html;
+            await this.crudAction(message);
             progressNotification.end();
             return;
         }, undefined, context.subscriptions);
         this.inset.onDidDispose(() => {
             console.log('WEBVIEW disposed...:(');
         });
-        const response = await generateHtml(ghciInstancePromise, identifier);
-        console.log(response.info);
-        this.inset.webview.html = response.html;
     }
-    refreshHtml() {
-        return null;
+    static async newVisual(context, ghciPromise, identifier, line) {
+        const a = new Visual(context, ghciPromise, identifier, line);
+        await a.refreshHtml();
+        return a;
+    }
+    async refreshHtml() {
+        const ghciInstance = await this.ghciPromise;
+        const load = await ghciInstance.call(':l Main');
+        console.log("load:", load);
+        const response = await ghciInstance.call(`graph File.${this.identifier}`);
+        try {
+            const parsed = JSON.parse(response);
+            console.debug(parsed);
+            this.inset.webview.html = parsed.html;
+        }
+        catch (e) {
+            console.error(e);
+        }
+        ;
+    }
+    async crudAction(message) {
+        if (!vscode.window.activeTextEditor)
+            throw "No editor is active.";
+        const { key, value, isRemove } = message;
+        const exp = isRemove ? 'Nothing' : `Just ${value}`;
+        console.log(isRemove, exp);
+        const ghciInstance = await this.ghciPromise;
+        await ghciInstance.call(':l Main');
+        const response = await ghciInstance.call(`edit (File.${this.identifier}) (${key}) (${exp})`);
+        const parsed = JSON.parse(response);
+        console.debug(parsed);
+        var startposition = new vscode.Position(this.line, 0);
+        var endingposition = new vscode.Position(this.line + 1, 0);
+        var range = new vscode.Range(startposition, endingposition);
+        vscode.window.activeTextEditor.edit(editBuilder => {
+            editBuilder.replace(range, `${this.identifier} = ${parsed.code}\n`);
+        });
+        await vscode.window.activeTextEditor.document.save();
+        this.refreshHtml();
     }
 }
+exports.Visual = Visual;
 const loadingPage = '\
   <html><head>\
   <style>\

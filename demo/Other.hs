@@ -10,8 +10,8 @@ import qualified Data.ByteString.Lazy
 import qualified Data.Text as T
 
 l1, l2, l3 :: [Int]
-l1 = [1, 2]
-l2 = [1,7, 10]
+l1 = [1, 4, 3]
+l2 = [7,10]
 l3 = [1..10]
 
 tree1 :: Tree Int
