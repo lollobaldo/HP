@@ -35,13 +35,19 @@ parseMod (Module l _ _ _ ds) = ds
 parseDec (PatBind _ (PVar _ (Ident s n)) _ _) = (s,n)
 parseDec _ = undefined
 
+useDecl :: Decl l -> Decl l
+useDecl = undefined
+
+h :: Num a => [a]
+h = [1, 1.5, 1%4]
+
 processor :: String -> IO ()
 processor file = do
   pr <- parseFile file
   let mod = parseRes pr
   let ds = parseMod mod
   let ns = map parseDec ds
-  print $ exactPrint mod []
+  print $ exactPrint (head ds) []
   print ns
   let str = ppprint (show ns)
   writeFile "temp.txt" str
@@ -51,22 +57,5 @@ main = do
   let mod = parseRes pr
   let ds = parseMod mod
   print ds
-  let str = ppprint (show (ds))
+  let str = ppprint (show ds)
   writeFile "temp.txt" str
-
--- let isPrime :: (Integral a) => a -> Bool
---     isPrime k | k <=1 = False | otherwise = not $ elem 0 (map (mod k)[2..k-1])
-
--- let nextPrime :: (Integral a) => a -> a
---     nextPrime n | isPrime n = n | otherwise = nextPrime (n+1)
-
--- -- returns a list of all primes between n and m, using the nextPrime function
--- let doPrime :: (Integral a) => a -> a -> [a]
---     doPrime n m
---         | curr > m = []
---         | otherwise = curr:doPrime (curr+1) m
---         where curr = nextPrime n
-
--- -- and our Q expression
--- let primeQ :: Int -> Int -> Q Exp
---     primeQ n m = [| doPrime n m |]

@@ -12,22 +12,16 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:catCoding.start",
-		"onCommand:catCoding.waffle"
+		"onCommand:visualise.identifier"
 	],
 	"main": "./out/extension.js",
 	"enableProposedApi": true,
 	"contributes": {
 		"commands": [
 			{
-				"command": "catCoding.start",
-				"title": "Start cat coding session",
-				"category": "Cat Coding"
-			},
-			{
-				"command": "catCoding.waffle",
-				"title": "Waffle cat coding session",
-				"category": "Cat Coding"
+				"command": "visualise.identifier",
+				"title": "Graph current variable",
+				"category": "Visualiser"
 			}
 		]
 	},

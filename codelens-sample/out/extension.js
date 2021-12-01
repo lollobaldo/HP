@@ -42,6 +42,7 @@ const replaceInFile = async (templatePath, filePath, reps) => {
 function activate(context) {
     let _ghciInstance;
     let _activeCwd = '';
+    const underliers = {};
     const getGhci = async () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -63,6 +64,15 @@ function activate(context) {
         }
         return _ghciInstance;
     };
+    const injectFileName = async (editor) => {
+        const filename = editor.document.fileName;
+        let { name } = path.parse(filename);
+        const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'Main.template.hs');
+        const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs');
+        await replaceInFile(tempDispPath, injeDispPath, [
+            ["###REPLACE WITH NAME OF MODULE###", name],
+        ]);
+    };
     const generateHtml = async (ghciInstancePromise, identifier) => {
         const ghciInstance = await ghciInstancePromise;
         const load = await ghciInstance.call(':l Main');
@@ -78,38 +88,46 @@ function activate(context) {
         ;
         return JSON.parse(dat);
     };
-    context.subscriptions.push(vscode.commands.registerCommand('catCoding.waffle', async () => {
-        const ghciInstance = await getGhci();
-        const d = await ghciInstance.call(':r');
-        console.log(d);
-        return;
-    }), vscode.commands.registerCommand('catCoding.start', async () => {
+    context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((document) => {
+        console.log("refreshing");
+        const documentId = document.uri.toString(true);
+        if (!(documentId in underliers)) {
+            const ghciInstancePromise = getGhci();
+            for (const identifier in underliers[documentId]) {
+                underliers[documentId][identifier].inset.webview.html = loadingPage;
+            }
+            for (const identifier in underliers[documentId]) {
+                underliers[documentId][identifier].inset.webview.html = loadingPage;
+            }
+        }
+    }), vscode.commands.registerCommand('visualise.identifier', async () => {
         if (!vscode.window.activeTextEditor) {
             return;
         }
         const ghciInstancePromise = getGhci();
         const editor = vscode.window.activeTextEditor;
         const document = editor.document;
+        const documentId = document.uri.toString(true);
+        if (!(documentId in underliers))
+            underliers[documentId] = {};
         const progressNotification = showProgress();
         const filename = editor.document.fileName;
-        let { name, dir } = path.parse(filename);
+        let { dir } = path.parse(filename);
         if (dir[1] === ':')
             dir = dir.replace(dir[0], dir[0].toUpperCase());
-        const tempDispPath = path.join(context.extensionPath, 'interactive-map', 'templates', 'Main.template.hs');
-        const injeDispPath = path.join(context.extensionPath, 'interactive-map', 'Main.hs');
+        injectFileName(editor);
         const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
-        const highlight = editor.document.getText(wordRange);
-        await replaceInFile(tempDispPath, injeDispPath, [
-            ["###REPLACE WITH NAME OF MODULE###", name],
-        ]);
-        console.log(highlight);
+        const identifier = editor.document.getText(wordRange);
+        console.log("Identifier: ", identifier);
         const line = editor.selection.active.line;
         const inset = vscode.window.createWebviewTextEditorInset(vscode.window.activeTextEditor, line - 1, 12, { localResourceRoots: [vscode.Uri.file(context.extensionPath)], enableScripts: true, });
+        inset.webview.html = loadingPage;
+        underliers[documentId][identifier] = { identifier, span: line, inset };
         inset.webview.onDidReceiveMessage(async (message) => {
             console.log(message);
             const progressNotification = showProgress();
-            if (!message.refresh) {
-                inset.webview.html = (await generateHtml(ghciInstancePromise, highlight)).html;
+            if (message.refresh) {
+                inset.webview.html = (await generateHtml(ghciInstancePromise, identifier)).html;
                 progressNotification.end();
                 return;
             }
@@ -119,28 +137,47 @@ function activate(context) {
             console.log(isRemove, exp);
             const ghciInstance = await ghciInstancePromise;
             await ghciInstance.call(':l Main');
-            const result = JSON.parse(await ghciInstance.call(`edit (File.${highlight}) (${key}) (${exp})`));
+            const result = JSON.parse(await ghciInstance.call(`edit (File.${identifier}) (${key}) (${exp})`));
             console.log("RESULT:");
             console.log(result);
             var startposition = new vscode.Position(line, 0);
             var endingposition = new vscode.Position(line + 1, 0);
             var range = new vscode.Range(startposition, endingposition);
             editor.edit(editBuilder => {
-                editBuilder.replace(range, `${highlight} = ${result.code}\n`);
+                editBuilder.replace(range, `${identifier} = ${result.code}\n`);
             });
             await document.save();
-            inset.webview.html = (await generateHtml(ghciInstancePromise, highlight)).html;
+            inset.webview.html = (await generateHtml(ghciInstancePromise, identifier)).html;
             progressNotification.end();
             return;
         }, undefined, context.subscriptions);
         inset.onDidDispose(() => {
             console.log('WEBVIEW disposed...:(');
         });
-        const response = await generateHtml(ghciInstancePromise, highlight);
+        const response = await generateHtml(ghciInstancePromise, identifier);
         console.log(response.info);
         inset.webview.html = response.html;
         progressNotification.end();
     }));
 }
 exports.activate = activate;
+const loadingPage = '\
+<html><head>\
+<style>\
+.loader {\
+  border: 16px solid #f3f3f3; /* Light grey */\
+  border-top: 16px solid #3498db; /* Blue */\
+  border-radius: 50%;\
+  width: 120px;\
+  height: 120px;\
+  animation: spin 2s linear infinite;\
+}\
+\
+@keyframes spin {\
+  0% { transform: rotate(0deg); }\
+  100% { transform: rotate(360deg); }\
+}\
+</style>\
+<body><div class="loader"></div>\
+';
 //# sourceMappingURL=extension.js.map
