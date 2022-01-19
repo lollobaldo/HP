@@ -42,6 +42,7 @@ class Visual {
         const load = await ghciInstance.call(':l Main');
         console.log("load:", load);
         const response = await ghciInstance.call(`graph File.${this.identifier}`);
+        console.log("WWWWW" + response);
         try {
             const parsed = JSON.parse(response);
             console.debug(parsed);
