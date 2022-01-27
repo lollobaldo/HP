@@ -42,28 +42,28 @@ class Visual {
         const load = await ghciInstance.call(':l Main');
         console.log("load:", load);
         const response = await ghciInstance.call(`graph File.${this.identifier}`);
-        console.log("WWWWW" + response);
+        // console.log("WWWWW" + response);
         try {
             const parsed = JSON.parse(response);
-            console.debug(parsed);
+            // console.debug(parsed);
             this.inset.webview.html = parsed.html;
         }
         catch (e) {
             console.error(e);
+            console.error(response);
         }
         ;
     }
     async crudAction(message) {
         if (!vscode.window.activeTextEditor)
             throw "No editor is active.";
-        const { key, value, isRemove } = message;
-        const exp = isRemove ? 'Nothing' : `Just ${value}`;
-        console.log(isRemove, exp);
+        const { key, value, opType } = message;
+        const exp = opType == 'Delete' ? 'Nothing' : `Just ${value}`;
         const ghciInstance = await this.ghciPromise;
         await ghciInstance.call(':l Main');
-        const response = await ghciInstance.call(`edit (File.${this.identifier}) (${key}) (${exp})`);
+        const response = await ghciInstance.call(`edit (${opType}) [(${key})] (${exp}) (File.${this.identifier}) `);
         const parsed = JSON.parse(response);
-        console.debug(parsed);
+        // console.info(parsed);
         var startposition = new vscode.Position(this.line, 0);
         var endingposition = new vscode.Position(this.line + 1, 0);
         var range = new vscode.Range(startposition, endingposition);

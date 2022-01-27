@@ -10,25 +10,29 @@ import Diagrams.Prelude ((#), (.~), (&), (~~))
 import qualified Diagrams.Prelude             as D
 import qualified Diagrams.Backend.SVG         as D
 
+import Crud
 import Displayable
 import Utils
 
 instance {-# OVERLAPPING #-} (Displayable a, Show a) => Displayable [a] where
-  prettyPrint = fst . prettyPrintListWithMap 0
+  prettyPrint = prettyPrintList . annotate
 
 instance Editable [] where
-  editAtKey l k mv = go l
-    where
-      go ((i, x):xs)
-        | i == k    = maybe mempty return mv <> map snd xs
-        | otherwise = return x <> go xs
+  editAtKey = editListAtKey
 
-prettyPrintListWithMap :: (Displayable a, Show a) => Int -> [a] ->  (D.Diagram D.SVG, Map)
-prettyPrintListWithMap _ [] = (mempty, mempty)
-prettyPrintListWithMap n (x:xs) = (D.hsep 2 [e, next]
-    # D.connectOutside' (D.with & D.gaps .~ D.small & D.headLength .~ D.local 0.15) idd ide, (idd, ""):ids)
+prettyPrintList :: (Displayable a, Show a) => [(Key, a)] -> D.Diagram D.SVG
+prettyPrintList [] = mempty
+prettyPrintList ((n, x):xs) = D.hsep 2 [e, next]
+    # D.connectOutside' (D.with & D.gaps .~ D.small & D.headLength .~ D.local 0.15) idd ide
     where
-        (next, ids) = prettyPrintListWithMap (n+1) xs
+        next = prettyPrintList xs
         e = D.svgTitle (show x) $ D.svgId (show n) $ D.svgClass idd (prettyPrint x # D.named idd)
         idd = "id" ++ show n
         ide = "id" ++ show (n + 1)
+
+editListAtKey :: Crud -> [Key] -> Maybe a -> [(Key, a)] -> [a]
+editListAtKey op [k] mv = go
+  where
+      go ((i, x):xs)
+        | i == k    = maybe mempty return mv <> map snd xs
+        | otherwise = return x <> go xs

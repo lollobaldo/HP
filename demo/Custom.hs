@@ -50,7 +50,7 @@ instance {-# OVERLAPPING #-} (Displayable a, Show a, D.IsName a) => Displayable 
 --       | i == k    = if isNothing mv then Node x [] else Node (fromJust mv) (map (fmap snd) sub)
 --       | otherwise = Node x (map go sub)
 
-prettyPrintGraph :: (Displayable a, Show a, D.IsName a) => Graph a ->  D.Diagram D.SVG
+prettyPrintGraph :: (Displayable a, Show a, D.IsName a) => Graph a -> D.Diagram D.SVG
 prettyPrintGraph g' = D.applyAll arrowsFactory layout
   where
     opt = (D.with & D.gaps .~ D.small & D.headLength .~ D.local 0.15 )

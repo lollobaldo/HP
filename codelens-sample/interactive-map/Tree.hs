@@ -18,6 +18,7 @@ import qualified Diagrams.Prelude           as D
 import qualified Diagrams.Backend.SVG       as D
 import qualified Diagrams.TwoD.Layout.Tree  as D
 
+import Crud
 import Displayable
 import Utils
 
@@ -30,8 +31,8 @@ instance {-# OVERLAPPING #-} (Displayable a, Show a) => Displayable (Tree a) whe
 instance Editable Tree where
   editAtKey = editTreeAtKey
 
-editTreeAtKey :: Tree (Key, a) -> Key -> Maybe a -> Tree a
-editTreeAtKey tree k mv = go tree
+editTreeAtKey :: Crud -> [Key] -> Maybe a -> Tree (Key, a) -> Tree a
+editTreeAtKey op [k] mv = go
   where
     go (Node (i, x) sub)
       | i == k    = if isNothing mv then Node x [] else Node (fromJust mv) (map (fmap snd) sub)

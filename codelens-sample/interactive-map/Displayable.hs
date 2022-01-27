@@ -13,6 +13,7 @@ import Control.Monad.State.Lazy
 import qualified Diagrams.Prelude             as D
 import qualified Diagrams.Backend.SVG         as D
 
+import Crud
 import Utils
 
 type Point = (Int, Int)
@@ -38,7 +39,7 @@ getKeys t = toList $ evalState (traverse go t) 0
               return n
 
 class (Foldable t) => Editable t where
-  editAtKey :: t (Key, a) -> Key -> Maybe a -> t a
+  editAtKey :: Crud -> [Key] -> Maybe a -> t (Key, a) -> t a
 
 prettyPrintWithMap :: (Traversable t, Displayable (t a)) => t a -> (D.Diagram D.SVG, Map)
 prettyPrintWithMap t = (prettyPrint t, map (\x -> ("id" ++ show x, "")) $ getKeys t)

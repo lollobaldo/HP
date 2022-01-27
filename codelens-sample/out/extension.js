@@ -5,7 +5,7 @@ const vscode = require("vscode");
 const path = require("path");
 const repljs_1 = require("./repljs");
 const utils_1 = require("./utils");
-const visual_1 = require("./visual");
+const Visual_1 = require("./Visual");
 function activate(context) {
     let _ghciInstance;
     let _activeCwd = '';
@@ -61,7 +61,7 @@ function activate(context) {
         const identifier = editor.document.getText(wordRange);
         // console.log("Identifier: ", identifier);
         const line = editor.selection.active.line;
-        const visual = await visual_1.Visual.newVisual(context, ghciInstancePromise, identifier, line);
+        const visual = await Visual_1.Visual.newVisual(context, ghciInstancePromise, identifier, line);
         visuals[documentId][identifier] = visual;
         progressNotification.end();
     }));

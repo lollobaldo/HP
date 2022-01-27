@@ -4,7 +4,7 @@ import * as path from 'path';
 
 import { InteractiveProcessHandle } from './repljs';
 import { injectFileName, showProgress } from './utils';
-import { Visual } from './visual';
+import { Visual } from './Visual';
 
 type Repl = InteractiveProcessHandle;
 

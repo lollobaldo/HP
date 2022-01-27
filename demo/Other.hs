@@ -11,7 +11,7 @@ import qualified Data.Text as T
 
 l1, l2, l3 :: [Int]
 l1 = [1,3]
-l2 = [30, 9, 5]
+l2 = [5]
 l3 = [1..10]
 
 tree1 :: Tree Int

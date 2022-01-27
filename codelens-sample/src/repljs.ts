@@ -20,7 +20,7 @@ export class InteractiveProcessHandle {
         data = data.toString().trim();
         lastString += data;
         if (lastString.endsWith(this.replPrompt)) {
-          console.log('done', lastString);
+          // console.log('done', lastString);
           resolve(lastString.replace(this.replPrompt,''));
         }
       });
