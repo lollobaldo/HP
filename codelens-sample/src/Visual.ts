@@ -15,24 +15,24 @@ interface Message {
 }
 
 export class Visual {
-	ghciPromise: Promise<Repl>;
-	identifier: string;
-	line: number;
-	inset: vscode.WebviewEditorInset;
-	
-	constructor(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number) {
+  ghciPromise: Promise<Repl>;
+  identifier: string;
+  line: number;
+  inset: vscode.WebviewEditorInset;
+
+  constructor(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number) {
     if (!vscode.window.activeTextEditor) throw "No editor is active.";
 
-	  this.ghciPromise = ghciPromise;
-	  this.identifier = identifier;
-	  this.line = line;
-  
-	  this.inset = vscode.window.createWebviewTextEditorInset(
-		vscode.window.activeTextEditor, line-1, 12,
-		{ localResourceRoots: [ vscode.Uri.file(context.extensionPath) ], enableScripts: true, }
-	  );
-	  this.inset.webview.html = loadingPage;
-	  this.inset.webview.onDidReceiveMessage(
+    this.ghciPromise = ghciPromise;
+    this.identifier = identifier;
+    this.line = line;
+
+    this.inset = vscode.window.createWebviewTextEditorInset(
+      vscode.window.activeTextEditor, line-1, 12,
+      { localResourceRoots: [ vscode.Uri.file(context.extensionPath) ], enableScripts: true, }
+    );
+    this.inset.webview.html = loadingPage;
+    this.inset.webview.onDidReceiveMessage(
         async (message: Message) => {
           console.log(message);
           if (!vscode.window.activeTextEditor) {
@@ -55,20 +55,20 @@ export class Visual {
       this.inset.onDidDispose(() => {
         console.log('WEBVIEW disposed...:(');
       });
-	}
+  }
 
   static async newVisual(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number) {
     const a = new Visual(context, ghciPromise, identifier, line);
     await a.refreshHtml();
     return a;
   }
-   
-	async refreshHtml() {
+
+  async refreshHtml(retry: boolean = true) {
     const ghciInstance = await this.ghciPromise;
     const load = await ghciInstance.call(':l Main');
-    console.log("load:", load);
+    console.log("load: ", load);
     const response = await ghciInstance.call(`graph File.${this.identifier}`);
-    // console.log("WWWWW" + response);
+    // console.log("graph: " + response);
     try{
       const parsed = JSON.parse(response);
       // console.debug(parsed);
@@ -76,8 +76,9 @@ export class Visual {
     }catch(e){
       console.error(e);
       console.error(response);
+      retry && this.refreshHtml(false);
     };
-	}
+  }
 
   async crudAction(message: Message) {
     if (!vscode.window.activeTextEditor) throw "No editor is active.";
@@ -99,26 +100,27 @@ export class Visual {
     });
     await vscode.window.activeTextEditor.document.save();
 
-    this.refreshHtml();
+    // Don't refresh to avoid weird race condition. Autosave will refresh anyway
+    // await this.refreshHtml();
   }
 }
-  
+
 
 const loadingPage = '\
   <html><head>\
   <style>\
   .loader {\
-	border: 16px solid #f3f3f3; /* Light grey */\
-	border-top: 16px solid #3498db; /* Blue */\
-	border-radius: 50%;\
-	width: 120px;\
-	height: 120px;\
-	animation: spin 2s linear infinite;\
+  border: 16px solid #f3f3f3; /* Light grey */\
+  border-top: 16px solid #3498db; /* Blue */\
+  border-radius: 50%;\
+  width: 120px;\
+  height: 120px;\
+  animation: spin 2s linear infinite;\
   }\
   \
   @keyframes spin {\
-	0% { transform: rotate(0deg); }\
-	100% { transform: rotate(360deg); }\
+  0% { transform: rotate(0deg); }\
+  100% { transform: rotate(360deg); }\
   }\
   </style>\
   <body><div class="loader"></div>\

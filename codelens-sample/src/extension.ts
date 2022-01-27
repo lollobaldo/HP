@@ -36,15 +36,15 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   context.subscriptions.push(
-    vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-      console.log("refreshing");
-      console.log(visuals);
+    vscode.workspace.onDidSaveTextDocument(async (document: vscode.TextDocument) => {
+      // console.log("refreshing");
+      // console.log(visuals);
       const documentId = document.uri.toString(true);
-      console.log(documentId)
+      // console.log(documentId)
       if (documentId in visuals) {
         for (const identifier in visuals[documentId]) {
           console.info("Refreshing: ", identifier);
-          visuals[documentId][identifier].refreshHtml();
+          await visuals[documentId][identifier].refreshHtml();
         }
       }
     }),
@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
       let { dir } = path.parse(filename);
       if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
 
-      injectFileName(context);
+      await injectFileName(context);
 
       const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
       const identifier = editor.document.getText(wordRange);

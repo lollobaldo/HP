@@ -2,7 +2,7 @@
 
 module Main where
 
-import qualified Other as File
+import qualified Custom as File
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as B

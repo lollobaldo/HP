@@ -18,7 +18,9 @@ instance {-# OVERLAPPING #-} (Displayable a, Show a) => Displayable [a] where
   prettyPrint = prettyPrintList . annotate
 
 instance Editable [] where
-  editAtKey = editListAtKey
+  editAtKey Create = appendToStart
+  editAtKey Update = editListAtKey
+  editAtKey Delete = editListAtKey
 
 prettyPrintList :: (Displayable a, Show a) => [(Key, a)] -> D.Diagram D.SVG
 prettyPrintList [] = mempty
@@ -30,8 +32,12 @@ prettyPrintList ((n, x):xs) = D.hsep 2 [e, next]
         idd = "id" ++ show n
         ide = "id" ++ show (n + 1)
 
-editListAtKey :: Crud -> [Key] -> Maybe a -> [(Key, a)] -> [a]
-editListAtKey op [k] mv = go
+
+appendToStart :: [Key] -> Maybe a -> [(Key, a)] -> [a]
+appendToStart _ (Just a) as = a : [a | (_, a) <- as]
+
+editListAtKey :: [Key] -> Maybe a -> [(Key, a)] -> [a]
+editListAtKey [k] mv = go
   where
       go ((i, x):xs)
         | i == k    = maybe mempty return mv <> map snd xs

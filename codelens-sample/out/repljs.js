@@ -11,61 +11,64 @@ class InteractiveProcessHandle {
         this.process.stdout.setEncoding('utf8');
         this.process.stderr.setEncoding('utf8');
     }
-    processToPromise(process) {
+    processToPromise() {
         return new Promise((resolve, reject) => {
-            process.stdout.removeAllListeners();
-            process.stderr.removeAllListeners();
-            process.stdin.removeAllListeners();
+            this.process.stdout.removeAllListeners();
+            this.process.stderr.removeAllListeners();
+            this.process.stdin.removeAllListeners();
             let lastString = '';
-            process.stdout.on("data", (data) => {
+            this.process.stdout.on("data", (data) => {
                 data = data.toString().trim();
+                console.log('Data: ', data);
+                // console.log('LS: ', lastString);
                 lastString += data;
                 if (lastString.endsWith(this.replPrompt)) {
-                    // console.log('done', lastString);
+                    console.log('Response: ', lastString);
                     resolve(lastString.replace(this.replPrompt, ''));
+                    lastString = ''; // Reset lastString for next call
                 }
             });
-            process.stderr.on("data", (data) => {
+            this.process.stderr.on("data", (data) => {
                 data = data.toString().trim();
                 console.warn(data);
             });
-            process.stdin.on("error", () => {
+            this.process.stdin.on("error", () => {
                 console.log("Failure in stdin! ... error");
                 reject();
             });
-            process.stdin.on("close", () => {
+            this.process.stdin.on("close", () => {
                 console.log("Failure in stdin! ... close");
                 reject();
             });
-            process.stdin.on("end", () => {
+            this.process.stdin.on("end", () => {
                 console.log("Failure in stdin! ... end");
                 reject();
             });
-            process.stdin.on("disconnect", () => {
+            this.process.stdin.on("disconnect", () => {
                 console.log("Failure in stdin! ... disconnect");
                 reject();
             });
-            process.stdout.on("error", () => {
+            this.process.stdout.on("error", () => {
                 console.log("Failure in stdout! ... error");
                 reject();
             });
-            process.stdout.on("close", () => {
+            this.process.stdout.on("close", () => {
                 console.log("Failure in stdout! ... close");
                 reject();
             });
-            process.stdout.on("end", () => {
+            this.process.stdout.on("end", () => {
                 console.log("Failure in stdout! ... end");
                 reject();
             });
-            process.stderr.on("error", () => {
+            this.process.stderr.on("error", () => {
                 console.log("Failure in stderr! ... error");
                 reject();
             });
-            process.stderr.on("close", () => {
+            this.process.stderr.on("close", () => {
                 console.log("Failure in stderr! ... close");
                 reject();
             });
-            process.stderr.on("end", () => {
+            this.process.stderr.on("end", () => {
                 console.log("Failure in stderr! ... end");
                 reject();
             });
@@ -73,7 +76,7 @@ class InteractiveProcessHandle {
     }
     call(command) {
         console.log(`called: "${command.trim()}"`);
-        let promise = this.processToPromise(this.process);
+        let promise = this.processToPromise();
         this.process.stdin.write(command + '\n');
         return promise;
     }

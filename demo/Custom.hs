@@ -10,6 +10,7 @@ import qualified Diagrams.Prelude           as D
 import qualified Diagrams.Backend.SVG       as D
 import qualified Diagrams.TwoD.Layout.Tree  as D
 
+import Crud
 import Displayable
 
 data Node a = Node a [a] deriving (Eq, Ord, Show, Read)
@@ -34,15 +35,23 @@ edges (Graph ns) = concatMap (\(Node a e) -> map (a,) e) ns
 
 
 g1 :: Graph Char
-g1 = Graph [Node 'a' ['b'..'d'], Node 'b' ['d'], Node 'c' ['a'..'b'], Node 'd' [], Node 'e' [], Node 'z' ['a'..'e']]
+g1 = Graph [Node 'z' "",Node 'a' "bcd",Node 'b' "d",Node 'c' "ab",Node 'd' "",Node 'e' "",Node 'z' "abcde"]
 
 instance {-# OVERLAPPING #-} (Displayable a, Show a, D.IsName a) => Displayable (Graph a) where
   prettyPrint = prettyPrintGraph
 
--- instance Editable Graph where
---   editAtKey = editGraphAtKey
+instance Editable Graph where
+  editAtKey Create = addNode
+  -- editAtKey Update = editListAtKey
+  -- editAtKey Delete = editListAtKey
 
--- editGraphAtKey :: Graph (Key, a) -> Key -> Maybe a -> Graph a
+disannotate :: [Node (Key, a)] -> [Node a]
+disannotate ns = [Node a (map snd ls) |  (Node (_, a) ls) <- ns]
+
+addNode :: [Key] -> Maybe a -> Graph (Key, a) -> Graph a
+addNode _ (Just n) (Graph ns) = Graph ((Node n []) : disannotate ns)
+
+-- editGraphAtKey :: [Key] -> Maybe a -> Graph (Key, a) -> Graph a
 -- editGraphAtKey graph k mv = graph
 -- editGraphAtKey (Graph ns) k mv = go ns
 --   where
