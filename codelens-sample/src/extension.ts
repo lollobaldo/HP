@@ -24,10 +24,10 @@ export function activate(context: vscode.ExtensionContext) {
     if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
     const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
 
-    console.log(_ghciInstance, cwd, _activeCwd);
+    // console.log(_ghciInstance, cwd, _activeCwd);
     if (!_ghciInstance || cwd !== _activeCwd) {
       const cmd = `cabal repl Main --ghc-options=-i${dir}`.replace(/\\/g, "\/");
-      console.log(cmd, cwd);
+      console.log(cmd);
       _ghciInstance = new InteractiveProcessHandle(cmd, [], { cwd });
       await _ghciInstance.call('');
       _activeCwd = cwd;

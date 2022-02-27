@@ -26,5 +26,5 @@ h = ['a', 'b']
 
 
 tree1 :: Tree Int
-tree1 = Node {rootLabel =1, subForest = [Node {rootLabel = 2, subForest = []},Node {rootLabel =6, subForest = [Node {rootLabel= 3, subForest =[Node {rootLabel= 50, subForest= []},Node {rootLabel = 51, subForest = []},Node {rootLabel= 52, subForest= []},Node {rootLabel = 53, subForest = []}]}]}]}
+tree1 = Node {rootLabel =1, subForest = [Node {rootLabel = 2, subForest = [Node {rootLabel = 4, subForest = []},Node {rootLabel = 5, subForest = []}]},Node {rootLabel =6, subForest = [Node {rootLabel= 3, subForest =[Node {rootLabel= 50, subForest= []},Node {rootLabel = 51, subForest = []},Node {rootLabel= 52, subForest= []},Node {rootLabel = 53, subForest = []}]}]}]}
   where lf x = Node x []

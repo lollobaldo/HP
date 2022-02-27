@@ -7,7 +7,7 @@ import { InteractiveProcessHandle } from './repljs';
 type Repl = InteractiveProcessHandle;
 
 export const showProgress = () => {
-  let ret: (value: void | PromiseLike<void>) => void;
+  let ret: (value: void | PromiseLike<void>) => void = () => {};
   const promise = new Promise<void>(resolve => {
       ret = resolve;
   });

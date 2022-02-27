@@ -24,6 +24,9 @@ instance Functor Graph where fmap f (Graph ns) = Graph (fmap (fmap f) ns)
 instance Foldable Graph where foldr f z g = foldr f z (vertices g)
 deriving instance Traversable (Graph)
 
+g1 :: Graph Char
+g1 = Graph [Node 'a' "cd",Node 'b' "cd",Node 'c' "a",Node 'd' "",Node 'f' "abcde",Node 'z' ""]
+
 labelOf :: Node a -> a
 labelOf (Node a _) = a
 
@@ -33,27 +36,46 @@ vertices (Graph ns) = map (\(Node a _) -> a) ns
 edges :: Graph a -> [(a, a)]
 edges (Graph ns) = concatMap (\(Node a e) -> map (a,) e) ns
 
+mapVertices :: (a -> a) -> Graph a -> Graph a
+mapVertices f (Graph ns) = Graph [ Node (f i) ngs | (Node i ngs) <- ns]
 
-g1 :: Graph Char
-g1 = Graph [Node 'z' "",Node 'a' "bcd",Node 'b' "d",Node 'c' "ab",Node 'd' "",Node 'e' "",Node 'z' "abcde"]
+mapEdges :: ([a] -> [a]) -> Graph a -> Graph a
+mapEdges f (Graph ns) = Graph [ Node i (f ngs) | (Node i ngs) <- ns]
+
+addNode :: Node a -> Graph a -> Graph a
+addNode n (Graph ns) = Graph (n : ns)
+
+deleteNode :: Eq a => a -> Graph a -> Graph a
+deleteNode k (Graph ns) = Graph [ Node i (filter (/= k) ngs) | (Node i ngs) <- ns, i /= k]
+
+deleteNodeBy :: (a -> Bool) -> Graph a -> Graph a
+deleteNodeBy f (Graph ns) = Graph [ Node i (filter (not . f) ngs) | (Node i ngs) <- ns, (not . f) i]
 
 instance {-# OVERLAPPING #-} (Displayable a, Show a, D.IsName a) => Displayable (Graph a) where
   prettyPrint = prettyPrintGraph
 
 instance Editable Graph where
-  editAtKey Create = addNode
+  editAtKey Create = addGraphNode
   -- editAtKey Update = editListAtKey
-  -- editAtKey Delete = editListAtKey
+  editAtKey Delete = deleteGraphNode
 
-disannotate :: [Node (Key, a)] -> [Node a]
-disannotate ns = [Node a (map snd ls) |  (Node (_, a) ls) <- ns]
+disannotateGraph :: Graph (Key, a) -> Graph a
+disannotateGraph (Graph ns) = Graph [Node a (map snd ls) |  (Node (_, a) ls) <- ns]
 
-addNode :: [Key] -> Maybe a -> Graph (Key, a) -> Graph a
-addNode _ (Just n) (Graph ns) = Graph ((Node n []) : disannotate ns)
+addGraphNode :: [Key] -> Maybe a -> Graph (Key, a) -> Graph a
+addGraphNode _ (Just n) graph = addNode (Node n []) (disannotateGraph graph)
+
+deleteGraphNode :: [Key] -> Maybe a -> Graph (Key, a) -> Graph a
+-- deleteGraphNode [k] Nothing graph@(Graph ns) = mapEdges (filter (==label)) $ disannotateGraph $ deleteNodeBy f graph
+deleteGraphNode [k] Nothing graph@(Graph ns) = disannotateGraph $ deleteNodeBy f graph
+  where
+    f = (\(i,_) -> i == k)
+    the [x] = x
+    label = the $ map (\(_,a) -> a) $ filter f (vertices graph)
+
 
 -- editGraphAtKey :: [Key] -> Maybe a -> Graph (Key, a) -> Graph a
--- editGraphAtKey graph k mv = graph
--- editGraphAtKey (Graph ns) k mv = go ns
+-- editGraphAtKey [k] mv (Graph ns) = go graph
 --   where
 --     go (Graph ns)
 --       | i == k    = if isNothing mv then Node x [] else Node (fromJust mv) (map (fmap snd) sub)
