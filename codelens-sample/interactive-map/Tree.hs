@@ -25,8 +25,8 @@ import Utils
 -- instance {-# OVERLAPPING #-} Show a => Show (Tree a) where
 --   show (Node x sub) = "Node " ++ show x ++ show sub
 
-instance {-# OVERLAPPING #-} (Displayable a, Show a) => Displayable (Tree a) where
-  prettyPrint = prettyPrintTree
+instance {-# OVERLAPPING #-} Displayable Tree where
+  display = prettyPrintTree
 
 instance Editable Tree where
   editAtKey = editTreeAtKey
@@ -38,9 +38,9 @@ editTreeAtKey op [k] mv = go
       | i == k    = if isNothing mv then Node x [] else Node (fromJust mv) (map (fmap snd) sub)
       | otherwise = Node x (map go sub)
 
-prettyPrintTree :: (Displayable a, Show a) => Tree a ->  D.Diagram D.SVG
+prettyPrintTree :: (Show a) => Tree (Info, a) ->  D.Diagram D.SVG
 prettyPrintTree tree = D.renderTree ((<> D.circle 1 # D.fc D.white) . r) (~~) posAnnTree
   where
-    r = \(k, e) -> D.svgId (show k) $ D.svgClass ("id" ++ show k) (prettyPrint e)
+    r (k, (c, e)) = D.svgId (show k) $ D.svgClass ("id" ++ show k) (showDisplay c e)
     posAnnTree = D.symmLayout' (D.with & D.slHSep .~ 4 & D.slVSep .~ 4) (annotate tree)
 

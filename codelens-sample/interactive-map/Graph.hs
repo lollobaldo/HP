@@ -22,7 +22,7 @@ import Displayable
 import Utils
 
 -- instance {-# OVERLAPPABLE #-} Displayable (Graph) where
---   prettyPrint = fst . prettyPrintGraphWithMap
+--   display = fst . prettyPrintGraphWithMap
 
 -- instance Editable Graph where
 --   editAtKey = editGraphAtKey

@@ -19,6 +19,9 @@ import qualified Graphics.Svg.Core
 
 debug x = trace (show x) x
 
+lineColour = D.sRGB 08 01 2000
+rainbow = cycle [D.blue, D.red, D.green]
+
 -- connectOutside :: (RealFloat n, D.Renderable (D.Path D.V2 n) b, D.IsName n1, D.IsName n2) =>
 --      D.ArrowOpts n -> n1 -> n2 -> D.QDiagram b D.V2 n D.Any -> D.QDiagram b D.V2 n D.Any
 -- connectOutside = D.connectOutside' (D.with & D.gaps .~ D.small & D.headLength .~ D.local 0.15)

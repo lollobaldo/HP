@@ -17,7 +17,7 @@ import Protocol
 import Tree
 import Utils
 
-graph :: (Displayable (t a), Traversable t, Show (t a)) => t a -> IO ()
+graph :: (Displayable t, Traversable t, Show a, Show (t a)) => t a -> IO ()
 graph a = do
     template <- B.readFile "templates/out.template.html"
     let html = generateHtml template (prettyPrintWithMap a)

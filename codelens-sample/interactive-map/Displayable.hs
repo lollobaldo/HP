@@ -3,6 +3,7 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE FlexibleContexts          #-}
 {-# LANGUAGE TypeFamilies              #-}
+{-# LANGUAGE TupleSections #-}
 
 module Displayable where
 
@@ -21,6 +22,9 @@ type Rect = (Point, Point)
 type Map = [(String, String)]
 
 type Key = Int
+type Info = D.Colour Double
+
+-- data Annotated a = Recursive (a Annotated) | Just a
 
 annotate :: (Traversable t) => t b -> t (Key, b)
 annotate t = evalState (traverse go t) 0
@@ -41,26 +45,29 @@ getKeys t = toList $ evalState (traverse go t) 0
 class (Foldable t) => Editable t where
   editAtKey :: Crud -> [Key] -> Maybe a -> t (Key, a) -> t a
 
-prettyPrintWithMap :: (Traversable t, Displayable (t a)) => t a -> (D.Diagram D.SVG, Map)
-prettyPrintWithMap t = (prettyPrint t, map (\x -> ("id" ++ show x, "")) $ getKeys t)
+prettyPrintWithMap :: (Traversable t, Displayable t, Show a) => t a -> (D.Diagram D.SVG, Map)
+prettyPrintWithMap t = (display processed D.# D.lc lineColour, map (\x -> ("id" ++ show x, "")) $ getKeys t)
+  where
+    processed = fmap (D.red, ) t
 
-class Displayable t where
-  prettyPrint :: t -> D.Diagram D.SVG
+-- patternise :: (Traversable t, Displayable (t a)) => t a -> (D.Diagram D.SVG, Map)
+-- patternise = display ()
 
-instance {-# OVERLAPPING  #-} Displayable Char where
-  prettyPrint t = D.text t' <> D.rect (0.8 * l) 1.2
+class Displayable (t :: * -> *) where
+  display :: Show a => t (Info, a) -> D.Diagram D.SVG
+  -- display' :: Functor t => t a -> D.Diagram D.SVG
+  -- display' = display . map (D.black, )
+
+showDisplay :: Show a => Info -> a -> D.Diagram D.SVG
+showDisplay color t = D.text t' <> D.rect (0.8 * fromIntegral (length t')) 1.2 D.# D.fc color
     where
       t' = show t
-      l = fromIntegral $ length t'
 
-instance {-# OVERLAPPING  #-} Displayable String where
-  prettyPrint t = D.text t' <> D.rect (0.8 * l) 1.2
-    where
-      t' = show t
-      l = fromIntegral $ length t'
+-- instance {-# OVERLAPPING  #-} Displayable Char where
+--   display color t = showDisplay t D.# D.fc color
 
-instance {-# OVERLAPPABLE  #-} (Num a, Show a) => Displayable a where
-  prettyPrint t = D.text t' <> D.rect (0.8 * l) 1.2
-    where
-      t' = show t
-      l = fromIntegral $ length t'
+-- instance {-# OVERLAPPING  #-} Displayable String where
+--   display color t = showDisplay t D.# D.fc color
+
+-- instance {-# OVERLAPPABLE  #-} (Num a, Show a) => Displayable a where
+--   display color t = showDisplay t D.# D.fc color
