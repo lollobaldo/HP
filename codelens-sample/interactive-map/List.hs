@@ -15,6 +15,7 @@ import Utils
 
 instance Displayable [] where
   display = prettyPrintList . annotate
+  generate n = zip (rainbow n) [0..]
 
 instance Editable [] where
   editAtKey Create = appendToStart

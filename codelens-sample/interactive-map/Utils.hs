@@ -20,7 +20,14 @@ import qualified Graphics.Svg.Core
 debug x = trace (show x) x
 
 lineColour = D.sRGB 08 01 2000
-rainbow = cycle [D.blue, D.red, D.green]
+
+rainbow :: Int -> [D.Colour Double]
+rainbow 1 = [D.red]
+rainbow 2 = [D.red, D.blue]
+rainbow 3 = [D.red, D.blue, D.green]
+rainbow 4 = [D.red, D.yellow, D.blue, D.green]
+rainbow 5 = [D.red, D.yellow, D.blue, D.green, D.purple]
+rainbow n = take n . cycle $ rainbow 5
 
 -- connectOutside :: (RealFloat n, D.Renderable (D.Path D.V2 n) b, D.IsName n1, D.IsName n2) =>
 --      D.ArrowOpts n -> n1 -> n2 -> D.QDiagram b D.V2 n D.Any -> D.QDiagram b D.V2 n D.Any

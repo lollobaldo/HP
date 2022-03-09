@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as path from 'path';
 
 import { InteractiveProcessHandle } from './repljs';
@@ -22,17 +21,47 @@ export function activate(context: vscode.ExtensionContext) {
     let dir = path.parse(filename).dir;
     // Fix for Windows uppercase requirement for drive letters
     if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
-    const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "\/");
+    const cwd = path.join(context.extensionPath, 'interactive-map').replace(/\\/g, "/");
 
     // console.log(_ghciInstance, cwd, _activeCwd);
     if (!_ghciInstance || cwd !== _activeCwd) {
-      const cmd = `cabal repl Main --ghc-options=-i${dir}`.replace(/\\/g, "\/");
+      const cmd = `cabal repl Main --ghc-options=-i${dir}`.replace(/\\/g, "/");
       console.log(cmd);
       _ghciInstance = new InteractiveProcessHandle(cmd, [], { cwd });
       await _ghciInstance.call('');
       _activeCwd = cwd;
     }
     return _ghciInstance;
+  };
+
+  const commandFunc = async (isFunction: boolean) => {
+    if (!vscode.window.activeTextEditor) {
+      return;
+    }
+    const ghciInstancePromise = getGhci();
+    const editor = vscode.window.activeTextEditor;
+    const document = editor.document;
+    
+    const documentId = document.uri.toString(true);
+    if (!(documentId in visuals)) visuals[documentId] = {};
+
+    const progressNotification = showProgress();
+
+    const filename = editor.document.fileName;
+    let { dir } = path.parse(filename);
+    if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
+
+    await injectFileName(context);
+
+    const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
+    const identifier = editor.document.getText(wordRange);
+    // console.log("Identifier: ", identifier);
+
+    const line = editor.selection.active.line;
+    const visual = await Visual.newVisual(context, ghciInstancePromise, identifier, line, isFunction);
+
+    visuals[documentId][identifier] = visual;
+    progressNotification.end();
   };
 
   context.subscriptions.push(
@@ -48,34 +77,8 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }
     }),
-    vscode.commands.registerCommand('visualise.identifier', async () => {
-      if (!vscode.window.activeTextEditor) {
-        return;
-      }
-      const ghciInstancePromise = getGhci();
-      const editor = vscode.window.activeTextEditor;
-      const document = editor.document;
-      
-      const documentId = document.uri.toString(true);
-      if (!(documentId in visuals)) visuals[documentId] = {};
-
-      const progressNotification = showProgress();
-
-      const filename = editor.document.fileName;
-      let { dir } = path.parse(filename);
-      if (dir[1] === ':') dir = dir.replace(dir[0], dir[0].toUpperCase());
-
-      await injectFileName(context);
-
-      const wordRange = editor.document.getWordRangeAtPosition(editor.selection.start);
-      const identifier = editor.document.getText(wordRange);
-      // console.log("Identifier: ", identifier);
-
-      const line = editor.selection.active.line;
-      const visual = await Visual.newVisual(context, ghciInstancePromise, identifier, line);
-
-      visuals[documentId][identifier] = visual;
-      progressNotification.end();
-    })
+    vscode.commands.registerCommand('visualise.identifier', () => commandFunc(false)),
+    vscode.commands.registerCommand('visualise.function', () => commandFunc(true)),
   );
+  console.log("registered");
 }

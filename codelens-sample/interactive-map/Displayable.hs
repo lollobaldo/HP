@@ -22,6 +22,7 @@ type Rect = (Point, Point)
 type Map = [(String, String)]
 
 type Key = Int
+type Label = Int
 type Info = D.Colour Double
 
 -- data Annotated a = Recursive (a Annotated) | Just a
@@ -45,16 +46,20 @@ getKeys t = toList $ evalState (traverse go t) 0
 class (Foldable t) => Editable t where
   editAtKey :: Crud -> [Key] -> Maybe a -> t (Key, a) -> t a
 
-prettyPrintWithMap :: (Traversable t, Displayable t, Show a) => t a -> (D.Diagram D.SVG, Map)
+prettyPrintWithMap :: (Traversable t, Displayable t, Show a, D.IsName a) => t a -> (D.Diagram D.SVG, Map)
 prettyPrintWithMap t = (display processed D.# D.lc lineColour, map (\x -> ("id" ++ show x, "")) $ getKeys t)
   where
-    processed = fmap (D.red, ) t
+    processed = fmap (D.black, ) t
+
+-- prettyPatternWithMap :: (Displayable t, Traversable t, Show a, Show (t a)) => (t a -> t a) -> (D.Diagram D.SVG, Map)
+-- prettyPatternWithMap t = (makePattern t, [])
 
 -- patternise :: (Traversable t, Displayable (t a)) => t a -> (D.Diagram D.SVG, Map)
 -- patternise = display ()
 
 class Displayable (t :: * -> *) where
-  display :: Show a => t (Info, a) -> D.Diagram D.SVG
+  display :: (Show a, D.IsName a) => t (Info, a) -> D.Diagram D.SVG
+  generate :: Int -> t (Info, Label)
   -- display' :: Functor t => t a -> D.Diagram D.SVG
   -- display' = display . map (D.black, )
 

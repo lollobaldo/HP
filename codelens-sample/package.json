@@ -12,7 +12,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:visualise.identifier"
+		"onCommand:visualise.identifier",
+		"onCommand:visualise.function"
 	],
 	"main": "./out/extension.js",
 	"enabledApiProposals": ["editorInsets"],
@@ -21,6 +22,11 @@
 			{
 				"command": "visualise.identifier",
 				"title": "Graph current variable",
+				"category": "Visualiser"
+			},
+			{
+				"command": "visualise.function",
+				"title": "Graph current function",
 				"category": "Visualiser"
 			}
 		]

@@ -1,6 +1,4 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
 
 import { InteractiveProcessHandle } from './repljs';
 import { showProgress } from './utils';
@@ -18,14 +16,16 @@ export class Visual {
   ghciPromise: Promise<Repl>;
   identifier: string;
   line: number;
+  isFunction: boolean;
   inset: vscode.WebviewEditorInset;
 
-  constructor(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number) {
+  constructor(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number, isFunction: boolean) {
     if (!vscode.window.activeTextEditor) throw "No editor is active.";
 
     this.ghciPromise = ghciPromise;
     this.identifier = identifier;
     this.line = line;
+    this.isFunction = isFunction;
 
     this.inset = vscode.window.createWebviewTextEditorInset(
       vscode.window.activeTextEditor, line-1, 12,
@@ -44,7 +44,7 @@ export class Visual {
             await this.refreshHtml();
             progressNotification.end();
             return;
-          };
+          }
           await this.crudAction(message);
           progressNotification.end();
           return;
@@ -57,17 +57,18 @@ export class Visual {
       });
   }
 
-  static async newVisual(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number) {
-    const a = new Visual(context, ghciPromise, identifier, line);
+  static async newVisual(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number, isFunction: boolean) {
+    const a = new Visual(context, ghciPromise, identifier, line, isFunction);
     await a.refreshHtml();
     return a;
   }
 
-  async refreshHtml(retry: boolean = true) {
+  async refreshHtml(retry = true) {
     const ghciInstance = await this.ghciPromise;
     const load = await ghciInstance.call(':l Main');
     console.log("load: ", load);
-    const response = await ghciInstance.call(`graph File.${this.identifier}`);
+    const command = this.isFunction ? 'pattern' : 'graph';
+    const response = await ghciInstance.call(`${command} File.${this.identifier}`);
     // console.log("graph: " + response);
     try{
       const parsed = JSON.parse(response);
@@ -77,7 +78,7 @@ export class Visual {
       console.error(e);
       console.error(response);
       retry && this.refreshHtml(false);
-    };
+    }
   }
 
   async crudAction(message: Message) {
@@ -92,9 +93,9 @@ export class Visual {
     const response = await ghciInstance.call(`edit (${opType}) [(${key})] (${exp}) (File.${this.identifier}) `);
     const parsed = JSON.parse(response);
     // console.info(parsed);
-    var startposition = new vscode.Position(this.line,0);
-    var endingposition = new vscode.Position(this.line+1,0);
-    var range = new vscode.Range(startposition,endingposition);
+    const startposition = new vscode.Position(this.line,0);
+    const endingposition = new vscode.Position(this.line+1,0);
+    const range = new vscode.Range(startposition,endingposition);
     vscode.window.activeTextEditor.edit(editBuilder => {
       editBuilder.replace(range, `${this.identifier} = ${parsed.code}\n`);
     });
