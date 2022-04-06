@@ -1,9 +1,5 @@
 module Demo where
 
--- import PrettyPrintable
--- import List
--- import Utils
-
 import Data.Tree
 
 import qualified Data.ByteString.Lazy

@@ -1,14 +1,11 @@
-import { privateEncrypt } from "crypto";
-
-const child_process = require('child_process');
-
+import * as child_process from 'child_process';
 export class InteractiveProcessHandle {
   private process: any;
 
   public outputLog: string;
   public latestOutput: string;
 
-  private replPrompt: string = "###DONE###";
+  private replPrompt = "###DONE###";
 
   private processToPromise() {
     return new Promise<string>((resolve, reject) => {
@@ -16,10 +13,10 @@ export class InteractiveProcessHandle {
       this.process.stderr.removeAllListeners();
       this.process.stdin.removeAllListeners();
 
-      let lastString: string = '';
+      let lastString = '';
 
       this.process.stdout.on("data", (data: any) => {
-        data = data.toString().trim()
+        data = data.toString().trim();
         console.log('Data: ', data);
         // console.log('LS: ', lastString);
         lastString += data;
@@ -78,8 +75,8 @@ export class InteractiveProcessHandle {
 
   public call(command: string): Promise<string> {
     console.log(`called: "${command.trim()}"`);
-    let promise = this.processToPromise();
-	  this.process.stdin.write(command+'\n');
+    const promise = this.processToPromise();
+    this.process.stdin.write(command+'\n');
     return promise;
   }
 
@@ -91,4 +88,4 @@ export class InteractiveProcessHandle {
     this.process.stdout.setEncoding('utf8');
     this.process.stderr.setEncoding('utf8');
   }
-};
+}
