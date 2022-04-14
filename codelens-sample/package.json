@@ -1,19 +1,22 @@
 {
-	"name": "inset",
-	"description": "Inset - A Webview API Sample",
+	"name": "interactive-visuals",
+	"displayName": "Interactive-visuals",
+	"description": "Interactive-visuals - inline in the code editor",
 	"version": "0.0.1",
 	"publisher": "lollobaldo",
-	"private": true,
+	"private": false,
+	"preview": true,
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
 	"categories": [
-		"Other"
+		"Visualization", "Education", "Testing"
 	],
 	"activationEvents": [
 		"onCommand:visualise.identifier",
-		"onCommand:visualise.function"
+		"onCommand:visualise.function",
+		"onCommand:visualise.randomfunction"
 	],
 	"main": "./out/extension.js",
 	"enabledApiProposals": ["editorInsets"],
@@ -27,6 +30,11 @@
 			{
 				"command": "visualise.function",
 				"title": "Graph current function",
+				"category": "Visualiser"
+			},
+			{
+				"command": "visualise.randomfunction",
+				"title": "Graph current function (generate sample input)",
 				"category": "Visualiser"
 			}
 		]

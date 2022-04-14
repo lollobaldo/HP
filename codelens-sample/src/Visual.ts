@@ -4,6 +4,7 @@ import { InteractiveProcessHandle } from './repljs';
 import { showProgress } from './utils';
 
 type Repl = InteractiveProcessHandle;
+export enum CommandType { Variable, Pattern, RandomPattern }
 
 interface Message {
   refresh?: boolean,
@@ -16,19 +17,19 @@ export class Visual {
   ghciPromise: Promise<Repl>;
   identifier: string;
   line: number;
-  isFunction: boolean;
+  commandType: CommandType;
   inset: vscode.WebviewEditorInset;
 
-  constructor(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number, isFunction: boolean) {
+  constructor(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number, commandType: CommandType) {
     if (!vscode.window.activeTextEditor) throw "No editor is active.";
 
     this.ghciPromise = ghciPromise;
     this.identifier = identifier;
     this.line = line;
-    this.isFunction = isFunction;
+    this.commandType = commandType;
 
     this.inset = vscode.window.createWebviewTextEditorInset(
-      vscode.window.activeTextEditor, line-1, 12,
+      vscode.window.activeTextEditor, line-1, 9,
       { localResourceRoots: [ vscode.Uri.file(context.extensionPath) ], enableScripts: true, }
     );
     this.inset.webview.html = loadingPage;
@@ -57,8 +58,8 @@ export class Visual {
       });
   }
 
-  static async newVisual(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number, isFunction: boolean) {
-    const a = new Visual(context, ghciPromise, identifier, line, isFunction);
+  static async newVisual(context: vscode.ExtensionContext, ghciPromise: Promise<Repl>, identifier: string, line: number, commandType: CommandType) {
+    const a = new Visual(context, ghciPromise, identifier, line, commandType);
     await a.refreshHtml();
     return a;
   }
@@ -67,8 +68,8 @@ export class Visual {
     const ghciInstance = await this.ghciPromise;
     const load = await ghciInstance.call(':l Main');
     console.log("load: ", load);
-    const command = this.isFunction ? 'pattern' : 'graph';
-    const response = await ghciInstance.call(`${command} File.${this.identifier}`);
+    const command = ['graph', 'pattern', 'randomPattern'][this.commandType];
+    const response = await ghciInstance.call(`${command} File.${this.identifier} ${this.commandType == CommandType.Pattern ? 'sampleList' : ''}`);
     // console.log("graph: " + response);
     try{
       const parsed = JSON.parse(response);

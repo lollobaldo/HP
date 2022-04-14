@@ -1,7 +1,5 @@
 module Other where
 
-import Displayable
-
 import Data.Tree
 
 import qualified Data.ByteString.Lazy

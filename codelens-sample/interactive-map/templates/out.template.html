@@ -154,7 +154,6 @@
   <!-- ### ADD HTML AFTER HERE ### -->
   <!-- <script>const ids = [1,2,3]</script> -->
   <script>
-    console.log(ids);
     const vscode = acquireVsCodeApi() || undefined;
     const modal = document.getElementById('modal');
     const refreshButton = document.getElementById('refreshButton');
@@ -168,28 +167,27 @@
     const updateButton = document.getElementById('updateButton');
     const deleteButton = document.getElementById('deleteButton');
     const opTypes = {'createButton': 'Create', 'updateButton': 'Update', 'deleteButton': 'Delete'};
-    ids.forEach(id => {
-      const els = document.querySelectorAll('.' + id);
-      console.log(els);
-      els.forEach(el => {
-        console.log(el.id);
-        el.addEventListener('click', event => {
-          const value = el.textContent.trim();
-          editInput.value = value;
-          modal.style.display = 'block';
-          const cb = event => {
-            console.log(event);
-            const pld = { id: el.id, key: el.id, value: editInput.value, opType: opTypes[event.target.id] };
-            console.log(pld);
-            vscode.postMessage(pld);
-          };
-          createButton.addEventListener('click', cb);
-          updateButton.addEventListener('click', cb);
-          deleteButton.addEventListener('click', cb);
-        })
-      });
+    
+    const els = document.querySelectorAll('.clickable');
+    console.log("HERE", els);
+    els.forEach(el => {
+      console.log(el.id);
+      el.addEventListener('click', event => {
+        const value = el.textContent.trim();
+        editInput.value = value;
+        modal.style.display = 'block';
+        const cb = event => {
+          console.log(event);
+          const pld = { id: el.id, key: el.id, value: editInput.value, opType: opTypes[event.target.id] };
+          console.log(pld);
+          vscode.postMessage(pld);
+        };
+        createButton.addEventListener('click', cb);
+        updateButton.addEventListener('click', cb);
+        deleteButton.addEventListener('click', cb);
+      })
     });
-    </script>
+  </script>
 </body>
 
 </html >

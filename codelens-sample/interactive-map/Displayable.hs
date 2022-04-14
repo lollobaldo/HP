@@ -4,6 +4,8 @@
 {-# LANGUAGE FlexibleContexts          #-}
 {-# LANGUAGE TypeFamilies              #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE ConstrainedClassMethods #-}
+{-# LANGUAGE ExistentialQuantification #-}
 
 module Displayable where
 
@@ -46,7 +48,7 @@ getKeys t = toList $ evalState (traverse go t) 0
 class (Foldable t) => Editable t where
   editAtKey :: Crud -> [Key] -> Maybe a -> t (Key, a) -> t a
 
-prettyPrintWithMap :: (Traversable t, Displayable t, Show a, D.IsName a) => t a -> (D.Diagram D.SVG, Map)
+prettyPrintWithMap :: (Traversable t, Displayable (t a), Show a, D.IsName a) => t a -> (D.Diagram D.SVG, Map)
 prettyPrintWithMap t = (display processed D.# D.lc lineColour, map (\x -> ("id" ++ show x, "")) $ getKeys t)
   where
     processed = fmap (D.black, ) t
@@ -57,9 +59,13 @@ prettyPrintWithMap t = (display processed D.# D.lc lineColour, map (\x -> ("id" 
 -- patternise :: (Traversable t, Displayable (t a)) => t a -> (D.Diagram D.SVG, Map)
 -- patternise = display ()
 
-class Displayable (t :: * -> *) where
-  display :: (Show a, D.IsName a) => t (Info, a) -> D.Diagram D.SVG
-  generate :: Int -> t (Info, Label)
+data Annotated t = Simple Key t | forall a. Displayable a => Annotated t (Key, a)
+
+class Displayable t where
+  -- display :: (Show a, D.IsName a) => t (Info, a) -> D.Diagram D.SVG
+  displaySimple :: t -> D.Diagram D.SVG
+  -- annotate :: Traversable t => t a -> t (Key, a)
+  -- generate :: Int -> t (Info, Label)
   -- display' :: Functor t => t a -> D.Diagram D.SVG
   -- display' = display . map (D.black, )
 
@@ -68,8 +74,8 @@ showDisplay color t = D.text t' <> D.rect (0.8 * fromIntegral (length t')) 1.2 D
     where
       t' = show t
 
--- instance {-# OVERLAPPING  #-} Displayable Char where
---   display color t = showDisplay t D.# D.fc color
+-- instance {-# OVERLAPPING  #-} Displayable [Char] where
+--   display = showDisplay D.black
 
 -- instance {-# OVERLAPPING  #-} Displayable String where
 --   display color t = showDisplay t D.# D.fc color

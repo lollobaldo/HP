@@ -15,8 +15,7 @@ import qualified Diagrams.Prelude           as D
 import qualified Diagrams.Backend.SVG       as D
 import qualified Diagrams.TwoD.Layout.Tree  as D
 
-import Crud
-import Displayable
+import Visualisable
 import Utils
 
 type Edge a = (a,a)
@@ -32,7 +31,11 @@ instance Foldable Graph where foldr f z g = foldr f z (vertices g)
 deriving instance Traversable (Graph)
 
 g1 :: Graph Char
-g1 = Graph [Node 'a' "cd",Node 'b' "cd",Node 'c' "af",Node 'd' "a",Node 'f' "abcde",Node 'z' ""]
+g1 = Graph [ Node 'a' "cd", Node 'b' "cd", Node 'c' "af",
+  Node 'd' "a", Node 'f' "abcde", Node 'z' ""]
+
+
+
 g2 = Graph [Node 0 [2..5],Node 1 [0,3,4,5],Node 2 [0,1,4,5],Node 3 [0,1,2,5],Node 4 [0,1,2,3],Node 5 [1,2,3,4]]
 
 
@@ -105,10 +108,9 @@ deleteNode k (Graph ns) = Graph [ Node i (filter (/= k) ngs) | (Node i ngs) <- n
 deleteNodeBy :: (a -> Bool) -> Graph a -> Graph a
 deleteNodeBy f (Graph ns) = Graph [ Node i (filter (not . f) ngs) | (Node i ngs) <- ns, (not . f) i]
 
-instance Displayable Graph where
-  display :: (Show a, D.IsName a) => Graph (Info, a) -> D.Diagram D.SVG
-  display = prettyPrintGraph
-  generate = generateGraph
+instance Visualisable1 Graph where
+  visualise1 :: (Show a, D.IsName a) => (a -> D.Diagram D.SVG) -> Graph (Key, Info, a) -> D.Diagram D.SVG
+  visualise1 = visualiseTree
 
 instance Editable Graph where
   editAtKey Create = addGraphNode
@@ -137,17 +139,32 @@ deleteGraphNode [k] Nothing graph@(Graph ns) = disannotateGraph $ deleteNodeBy f
 --       | i == k    = if isNothing mv then Node x [] else Node (fromJust mv) (map (fmap snd) sub)
 --       | otherwise = Node x (map go sub)
 
-prettyPrintGraph :: (Show a, D.IsName a) => Graph (Info, a) ->  D.Diagram D.SVG
-prettyPrintGraph g' = D.applyAll arrowsFactory layout
+trd :: (a,b,c) -> c
+trd (_,_,c) = c
+
+visualiseTree :: (Show a, D.IsName a) => (a -> D.Diagram D.SVG) -> Graph (Key, Info, a) -> D.Diagram D.SVG
+visualiseTree f g = D.applyAll arrowsFactory layout
   where
     opt = (D.with & D.gaps .~ D.small & D.headLength .~ D.local 0.15 )
-    g = annotate g'
     n = length $ vs
     vs = vertices g
     arrowsFactory :: [(D.Diagram D.SVG -> D.Diagram D.SVG)]
-    arrowsFactory = map (uncurry (D.connectOutside' opt)) (edges . fmap snd $ g')
+    arrowsFactory = map (uncurry (D.connectOutside' opt)) (edges . fmap trd $ g)
     layout = D.atPoints (D.trailVertices $ D.regPoly n 1) (map node vs)
-    node (k, (color, e)) = D.svgId (show k) $ D.svgClass ("id" ++ show k) $ D.text (show e) # D.fontSizeL 0.2 <> D.circle 0.2 # D.named e # D.fc color
+    node (k, color, e) = D.svgId (show k) $ D.svgClass ("id" ++ show k) $ D.text (show e) # D.fontSizeL 0.2 <> D.circle 0.2 # D.named e
+
+
+-- prettyPrintGraph :: (Show a, D.IsName a) => Graph (Info, a) ->  D.Diagram D.SVG
+-- prettyPrintGraph g' = D.applyAll arrowsFactory layout
+--   where
+--     opt = (D.with & D.gaps .~ D.small & D.headLength .~ D.local 0.15 )
+--     g = annotate g'
+--     n = length $ vs
+--     vs = vertices g
+--     arrowsFactory :: [(D.Diagram D.SVG -> D.Diagram D.SVG)]
+--     arrowsFactory = map (uncurry (D.connectOutside' opt)) (edges . fmap snd $ g')
+--     layout = D.atPoints (D.trailVertices $ D.regPoly n 1) (map node vs)
+--     node (k, (color, e)) = D.svgId (show k) $ D.svgClass ("id" ++ show k) $ D.text (show e) # D.fontSizeL 0.2 <> D.circle 0.2 # D.named e # D.fc color
 
 
 -- [Node 'a' "cd",Node 'b' "cd",Node 'c' "a",Node 'd' "",Node 'f' "abcde",Node 'z' ""]

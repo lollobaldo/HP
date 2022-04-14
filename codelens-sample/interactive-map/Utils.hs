@@ -25,22 +25,8 @@ rainbow :: Int -> [D.Colour Double]
 rainbow 1 = [D.red]
 rainbow 2 = [D.red, D.blue]
 rainbow 3 = [D.red, D.blue, D.green]
-rainbow 4 = [D.red, D.yellow, D.blue, D.green]
-rainbow 5 = [D.red, D.yellow, D.blue, D.green, D.purple]
-rainbow n = take n . cycle $ rainbow 5
-
--- connectOutside :: (RealFloat n, D.Renderable (D.Path D.V2 n) b, D.IsName n1, D.IsName n2) =>
---      D.ArrowOpts n -> n1 -> n2 -> D.QDiagram b D.V2 n D.Any -> D.QDiagram b D.V2 n D.Any
--- connectOutside = D.connectOutside' (D.with & D.gaps .~ D.small & D.headLength .~ D.local 0.15)
-
-generateHTML :: [String] -> B.ByteString -> B.ByteString
-generateHTML ids svg = svg <> generateCallbacks ids
-
-generateCallbacks :: [String] -> B.ByteString
-generateCallbacks ids = ""
-    <> "<script>\n"
-    <> "    const ids = " <> C.pack (show ids) <> ";\n"
-    <> "</script>"
+rainbow 4 = [D.red, D.blue, D.green, D.purple]
+rainbow n = take n . cycle $ rainbow 4
 
 printSvgToByte svg =
     let options = D.SVGOptions (D.dims2D 800 200) Nothing (T.pack "") [] True
@@ -48,29 +34,9 @@ printSvgToByte svg =
     in
         L.toStrict $ Graphics.Svg.Core.renderBS svgDoc
 
--- printSvgToFile path svg =
---     let bs = printSvgToByte path svg
---     in
---         B.writeFile path bs
-
--- printMappedSvgToFile path (svg, mp) =
---     let bs = printSvgToByte path svg
---         html = generateHTML (map fst mp) bs
---     in
---         B.writeFile path html
-
--- injectSvgToFile path template (svg, mp) =
---     let bs = printSvgToByte path svg
---         inject = generateHTML (map fst mp) bs
---         pieces = B.breakSubstring "<!-- ### ADD HTML AFTER HERE ### -->" template
---         html = fst pieces <> inject <> snd pieces
---     in
---         B.writeFile path html
-
-generateHtml :: B.ByteString -> (D.Diagram D.SVG, [(String, b)]) -> B.ByteString
-generateHtml template (svg, mp) =
-    let bs = printSvgToByte svg
-        inject = generateHTML (map fst mp) bs
+generateHtml :: B.ByteString -> D.Diagram D.SVG -> B.ByteString
+generateHtml template svg =
+    let svgB = printSvgToByte svg
         pieces = B.breakSubstring "<!-- ### ADD HTML AFTER HERE ### -->" template
     in
-        fst pieces <> inject <> snd pieces
+        fst pieces <> svgB <> snd pieces

@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { InteractiveProcessHandle } from './repljs';
 import { injectFileName, showProgress } from './utils';
-import { Visual } from './Visual';
+import { Visual, CommandType } from './Visual';
 
 type Repl = InteractiveProcessHandle;
 
@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
     return _ghciInstance;
   };
 
-  const commandFunc = async (isFunction: boolean) => {
+  const commandFunc = async (commandType: CommandType) => {
     if (!vscode.window.activeTextEditor) {
       return;
     }
@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
     // console.log("Identifier: ", identifier);
 
     const line = editor.selection.active.line;
-    const visual = await Visual.newVisual(context, ghciInstancePromise, identifier, line, isFunction);
+    const visual = await Visual.newVisual(context, ghciInstancePromise, identifier, line, commandType);
 
     visuals[documentId][identifier] = visual;
     progressNotification.end();
@@ -77,8 +77,9 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }
     }),
-    vscode.commands.registerCommand('visualise.identifier', () => commandFunc(false)),
-    vscode.commands.registerCommand('visualise.function', () => commandFunc(true)),
+    vscode.commands.registerCommand('visualise.identifier', () => commandFunc(CommandType.Variable)),
+    vscode.commands.registerCommand('visualise.function', () => commandFunc(CommandType.Pattern)),
+    vscode.commands.registerCommand('visualise.randomfunction', () => commandFunc(CommandType.RandomPattern)),
   );
   console.log("registered");
 }

@@ -17,11 +17,11 @@ export class InteractiveProcessHandle {
 
       this.process.stdout.on("data", (data: any) => {
         data = data.toString().trim();
-        console.log('Data: ', data);
+        // console.log('Data: ', data);
         // console.log('LS: ', lastString);
         lastString += data;
         if (lastString.endsWith(this.replPrompt)) {
-          console.log('Response: ', lastString);
+          // console.log('Response: ', lastString);
           resolve(lastString.replace(this.replPrompt,''));
           lastString = ''; // Reset lastString for next call
         }
